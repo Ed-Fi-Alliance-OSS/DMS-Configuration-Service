@@ -1,0 +1,6 @@
+@EdFi.DmsConfigurationService.Frontend.AspNetCore_HostAddress = http://localhost:5126
+
+GET {{EdFi.DmsConfigurationService.Frontend.AspNetCore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
