@@ -1,5 +1,7 @@
 # DMS Configuration Service
 
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/Ed-Fi-Alliance-OSS/DMS-Configuration-Service/badge)](https://securityscorecards.dev/viewer/?uri=github.com/Ed-Fi-Alliance-OSS/DMS-Configuration-Service)
+
 The DMS Configuration Service complements the [Data Management
 Service](https://github.com/Ed-Fi-Alliance-OSS/Data-Management-Service) by
 providing an Ed-Fi Admin API interface for managing client credentials and
