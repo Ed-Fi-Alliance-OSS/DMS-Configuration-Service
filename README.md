@@ -1,4 +1,12 @@
-# DMS-Configuration-Service
+# DMS Configuration Service
+
+The DMS Configuration Service complements the [Data Management
+Service](https://github.com/Ed-Fi-Alliance-OSS/Data-Management-Service) by
+providing an Ed-Fi Admin API interface for managing client credentials and
+authorization settings.
+
+See [Project Tanager](https://github.com/Ed-Fi-Alliance-OSS/Project-Tanager) for
+architecture and design notes.
 
 ## Repository Metadata
 
@@ -8,7 +16,7 @@
 - [Copyright and License Notices](./NOTICES.md)
 - [Security](./SECURITY.md)
 - [License](./LICENSE)
-- 
+
 ## Legal Information
 
 Copyright (c) 2024 Ed-Fi Alliance, LLC and contributors.
