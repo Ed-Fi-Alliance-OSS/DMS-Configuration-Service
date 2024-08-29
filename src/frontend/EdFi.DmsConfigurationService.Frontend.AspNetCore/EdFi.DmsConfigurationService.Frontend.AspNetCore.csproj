@@ -7,5 +7,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
-
+    <ItemGroup>
+        <Content Include="EdFi.DmsConfigurationService.Frontend.AspNetCore.nuspec" CopyToPublishDirectory="Always" CopyToOutputDirectory="Never" />
+    </ItemGroup>
 </Project>

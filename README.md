@@ -19,7 +19,7 @@ architecture and design notes.
 - [Security](./SECURITY.md)
 - [License](./LICENSE)
 
-## Legal Information
+## Legal Information 
 
 Copyright (c) 2024 Ed-Fi Alliance, LLC and contributors.
 
