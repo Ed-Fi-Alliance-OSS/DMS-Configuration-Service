@@ -3,7 +3,7 @@
 The purpose of this document is to provide the basic steps for configuring Keycloak locally using docker-compose.
 
 ### 1.	A yaml file "keycloak.yml" (eng\docker-compose\keycloak.yml) was created that contains the configuration needed to lift the container using the command:
-`docker-compose -p keycloak_demo -f keycloak.yml up -d`
+`docker compose -p keycloak_demo -f keycloak.yml up -d`
 
  ![alt text](image.png)
 
