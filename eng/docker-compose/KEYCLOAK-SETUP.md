@@ -2,22 +2,32 @@
 
 The purpose of this document is to provide the basic steps for configuring Keycloak locally using docker-compose.
 
-### 1.	A yaml file "keycloak.yml" (eng\docker-compose\keycloak.yml) was created that contains the configuration needed to lift the container using the command:
-`docker compose -p keycloak_demo -f keycloak.yml up -d`
+> [!WARNING]
+> **NOT FOR PRODUCTION USE!** Includes passwords in the default configuration that are
+> visible in this repo and should never be used in real life. Be very careful!
 
- ![alt text](image.png)
+### 1.  Create a `.env` file. The `.env.example` is a good starting point.
+
+### 2.	This directory contains the `keycloak.yml` file which will create the container. To Perform the docker compose execution use the following command:
+
+```pwsh
+# Start keykloack
+./start-keycloak.ps1
+```
+![alt text](image-12.png)
+ 
 
 ### 2.	Once either of the two previous commands is executed, you can validate that keycloak is up and running in Docker Desktop.
-  ![alt text](image-1.png)
+![alt text](image-13.png)
 
-### 3.	Now, you can enter the URL: http://localhost:8081/
+### 3.	Now, you can enter the URL: http://localhost:8045/
 
 
 ### 4.	On this page, you will be asked for your username (admin) and password (admin)
 ![alt text](image-2.png)
 
 ### 5.	Once authenticated, you will enter the settings.
-![alt text](image-3.png)
+![alt text](image-14.png)
 
 ### 6.	In the upper left of the scream, you must create a new realm, called “edfi”.
 ![alt text](image-4.png)
