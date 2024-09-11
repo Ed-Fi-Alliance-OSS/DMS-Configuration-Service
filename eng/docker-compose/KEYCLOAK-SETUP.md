@@ -64,5 +64,5 @@ If you want to shut down the container you can use the -d parameter and if you w
 ./start-keycloak.ps1 - d
 
 # Stop keykloack and delete volume
-./start-keycloak-dms.ps1 -d -v
+./start-keycloak.ps1 -d -v
 ```
