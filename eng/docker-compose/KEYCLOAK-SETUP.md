@@ -14,44 +14,44 @@ The purpose of this document is to provide the basic steps for configuring Keycl
 # Start keykloack
 ./start-keycloak.ps1
 ```
-![alt text](image-12.png)
+![alt text](./images/image-12.png)
  
 
 ### 2.	Once either of the two previous commands is executed, you can validate that keycloak is up and running in Docker Desktop.
-![alt text](image-13.png)
+![alt text](./images/image-13.png)
 
 ### 3.	Now, you can enter the URL: http://localhost:8045/
 
 
 ### 4.	On this page, you will be asked for your username (admin) and password (admin)
-![alt text](image-2.png)
+![alt text](./images/image-2.png)
 
 ### 5.	Once authenticated, you will enter the settings.
-![alt text](image-14.png)
+![alt text](./images/image-14.png)
 
 ### 6.	In the upper left of the scream, you must create a new realm, called “edfi”.
-![alt text](image-4.png)
+![alt text](./images/image-4.png)
 
 ### 7.	In this configuration, we will only be asked for the name and click on Create
-![alt text](image-5.png)
+![alt text](./images/image-5.png)
 
 ## 8.	The home screen will change this way
-![alt text](image-6.png)
+![alt text](./images/image-6.png)
 
 ### 9.	We will proceed to the configuration of the client by clicking Clients, which is located in the left panel (Note: make sure you are in edit and not in Master).
-![alt text](image-7.png)
+![alt text](./images/image-7.png)
 
 ## #10.	In General settings, we will assign a Client ID
-![alt text](image-8.png)
+![alt text](./images/image-8.png)
 
 ### 11.	En Capability config, we will enable 
 a.	Client authentication
 b.	Authorization
 c.	Authentication Flow, check-in Standard flow
-![alt text](image-9.png)
+![alt text](./images/image-9.png)
 
 ### 12.	In Login settings, we will indicate the Root URL
-![alt text](image-10.png)
+![alt text](./images/image-10.png)
 
 ### 13.	Click Save
- ![alt text](image-11.png)
+ ![alt text](./images/image-11.png)
