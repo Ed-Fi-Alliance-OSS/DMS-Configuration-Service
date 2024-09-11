@@ -55,3 +55,14 @@ c.	Authentication Flow, check-in Standard flow
 
 ### 13.	Click Save
  ![alt text](./images/image-11.png)
+
+
+#### Note: 
+If you want to shut down the container you can use the -d parameter and if you want to remove the volume, add the -v parameter.
+```pwsh
+# Stop keykloack, keeping volume
+./start-keycloak.ps1 - d
+
+# Stop keykloack and delete volume
+./start-keycloak-dms.ps1 -d -v
+```
