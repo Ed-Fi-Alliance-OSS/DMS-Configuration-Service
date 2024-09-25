@@ -3,11 +3,17 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
+using EdFi.DmsConfigurationService.Backend;
+using EdFi.DmsConfigurationService.Backend.Keycloak;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Configuration;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
@@ -16,24 +22,39 @@ public static class WebApplicationBuilderExtensions
 {
     public static void AddServices(this WebApplicationBuilder webApplicationBuilder)
     {
-        IConfiguration config = webApplicationBuilder.Configuration;
+        // For FluentValidation
+        var executingAssembly = Assembly.GetExecutingAssembly();
 
+        webApplicationBuilder.Services
+         .AddValidatorsFromAssembly(executingAssembly)
+         .AddFluentValidationAutoValidation();
+        ValidatorOptions.Global.DisplayNameResolver = (type, memberInfo, expression)
+                    => memberInfo?
+                        .GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>()?.GetName();
+
+        webApplicationBuilder.Services.AddSingleton<IValidateOptions<IdentitySettings>, IdentitySettingsValidator>();
+
+        IConfiguration config = webApplicationBuilder.Configuration;
         var settings = config.GetSection("IdentitySettings");
-        var identitySettings = new IdentitySettings();
-        settings.Bind(identitySettings);
+        var identitySettings = ReadSettings();
 
         webApplicationBuilder.Services.Configure<IdentitySettings>(settings);
 
+        webApplicationBuilder.Services.AddScoped(x =>
+            new KeycloakContext(identitySettings.IdentityServer, identitySettings.Realm, identitySettings.ClientId, identitySettings.ClientSecret));
+
         webApplicationBuilder.Services.AddHttpClient();
 
-        var authority = identitySettings.Authority;
-        var metadataAddress = $"{authority}/.well-known/openid-configuration";
+        webApplicationBuilder.Services.AddTransient<IUserRepository, UserRepository>();
+        webApplicationBuilder.Services.AddTransient<ITokenManager, TokenManager>();
+
+        var metadataAddress = $"{identitySettings.Authority}/.well-known/openid-configuration";
 
         webApplicationBuilder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
             {
                 options.MetadataAddress = metadataAddress;
-                options.Authority = authority;
+                options.Authority = identitySettings.Authority;
                 options.Audience = "account";
                 options.RequireHttpsMetadata = false;
 
@@ -73,5 +94,17 @@ public static class WebApplicationBuilderExtensions
             });
         webApplicationBuilder.Services.AddAuthorization(options => options.AddPolicy(SecurityConstants.AdminPolicy,
             policy => policy.RequireClaim(ClaimTypes.Role, SecurityConstants.AdminRole)));
+
+        IdentitySettings ReadSettings()
+        {
+            return new IdentitySettings
+            {
+                Authority = config.GetValue<string>("IdentitySettings:Authority")!,
+                IdentityServer = config.GetValue<string>("IdentitySettings:IdentityServer")!,
+                Realm = config.GetValue<string>("IdentitySettings:Realm")!,
+                ClientId = config.GetValue<string>("IdentitySettings:ClientId")!,
+                ClientSecret = config.GetValue<string>("IdentitySettings:ClientSecret")!
+            };
+        }
     }
 }

@@ -9,9 +9,11 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Configuration;
 
 public class IdentitySettings
 {
-    public string? Authority { get; set; }
-    public string? ClientId { get; set; }
-    public string? ClientSecret { get; set; }
+    public required string Authority { get; set; }
+    public required string IdentityServer { get; set; }
+    public required string ClientId { get; set; }
+    public required string ClientSecret { get; set; }
+    public required string Realm { get; set; }
     public string? UserProfileUri { get; set; }
     public string? AuthenticationScheme { get; set; }
     public string? LoginProvider { get; set; }
@@ -20,16 +22,34 @@ public class IdentitySettings
     public bool GetClaimsFromUserInfoEndpoint { get; set; }
     public bool SaveTokens { get; set; }
     public List<string>? Scopes { get; set; }
-    /// <summary>
-    /// Mappings from OIDC Claim Types to those used by Admin App. Should only be used "OnTicketReceived" - favor ClaimTypes used by Admin App, not OIDC.
-    /// </summary>
-    public ClaimTypeMappings? ClaimTypeMappings { get; set; }
 }
 
-public class ClaimTypeMappings
+public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
 {
-    public string? NameClaimType { get; set; }
-    public string? IdentifierClaimType { get; set; }
-    public string? EmailClaimType { get; set; }
-    public string? RoleClaimType { get; set; }
+    public ValidateOptionsResult Validate(string? name, IdentitySettings options)
+    {
+        if (string.IsNullOrWhiteSpace(options.Authority))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: Authority");
+        }
+
+        if (string.IsNullOrWhiteSpace(options.IdentityServer))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: IdentityServer");
+        }
+
+        if (string.IsNullOrWhiteSpace(options.ClientId))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: ClientId");
+        }
+        if (string.IsNullOrWhiteSpace(options.ClientSecret))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: ClientSecret");
+        }
+        if (string.IsNullOrWhiteSpace(options.Realm))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: Realm");
+        }
+        return ValidateOptionsResult.Success;
+    }
 }

@@ -4,11 +4,13 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServices();
 var app = builder.Build();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

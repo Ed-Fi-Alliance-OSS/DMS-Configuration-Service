@@ -9,12 +9,19 @@ public class AdminUserModule : IEndpointModule
 {
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/secure", GetAccess).RequireAuthorization("AdminPolicy");
+        endpoints.MapGet("/admin", GetAdminDetails).RequireAuthorization("AdminPolicy");
+        endpoints.MapGet("/user", GetUserDetails).RequireAuthorization();
     }
 
-    public IResult GetAccess(HttpContext httpContext)
+    public IResult GetAdminDetails(HttpContext httpContext)
     {
         var currentUser = httpContext.User;
-        return Results.Ok($"User name: {currentUser.Claims.First(x => x.Type.Equals("name")).Value}");
+        return Results.Ok($"Admin user name: {currentUser.Claims.First(x => x.Type.Equals("preferred_username")).Value}");
+    }
+
+    public IResult GetUserDetails(HttpContext httpContext)
+    {
+        var currentUser = httpContext.User;
+        return Results.Ok($"User name: {currentUser.Claims.First(x => x.Type.Equals("preferred_username")).Value}");
     }
 }

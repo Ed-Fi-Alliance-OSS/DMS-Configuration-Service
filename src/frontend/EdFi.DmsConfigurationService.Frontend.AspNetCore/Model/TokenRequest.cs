@@ -3,11 +3,22 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using FluentValidation;
+
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 
 public class TokenRequest
 {
     public string? Username { get; set; }
     public string? Password { get; set; }
+
+    public class Validator : AbstractValidator<TokenRequest>
+    {
+        public Validator()
+        {
+            RuleFor(m => m.Username).NotEmpty();
+            RuleFor(m => m.Password).NotEmpty();
+        }
+    }
 }
 

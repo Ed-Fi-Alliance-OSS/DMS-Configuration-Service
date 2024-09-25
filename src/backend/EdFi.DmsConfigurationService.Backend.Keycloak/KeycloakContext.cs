@@ -3,10 +3,6 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
+namespace EdFi.DmsConfigurationService.Backend.Keycloak;
 
-public static class SecurityConstants
-{
-    public static string AdminPolicy = "AdminPolicy";
-    public static string AdminRole = "configuration-admin";
-}
+public record KeycloakContext(string Url, string Realm, string ClientId, string ClientSecret);
