@@ -20,11 +20,17 @@ public class RegisterRequest
         public Validator()
         {
             RuleFor(m => m.Username).NotEmpty();
+
+            RuleFor(m => m.Password).NotEmpty();
             RuleFor(m => m.Password)
-                .NotEmpty()
-                .Matches(new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,12}$"))
-                .WithMessage("Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character, and must be 32 to 128 characters long.");
-            RuleFor(m => m.EmailId).NotEmpty().Must(BeAValidEmailId).WithMessage("Please provide valid email id");
+            .Matches(new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z\d]).{8,12}$"))
+            .When(m => !string.IsNullOrEmpty(m.Password))
+            .WithMessage("Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character, and must be 8 to 12 characters long.");
+
+            RuleFor(m => m.EmailId).NotEmpty();
+            RuleFor(m => m.EmailId).Must(BeAValidEmailId)
+                .When(m => !string.IsNullOrEmpty(m.EmailId))
+                .WithMessage("Please provide valid email id");
         }
 
         private bool BeAValidEmailId(string? email)

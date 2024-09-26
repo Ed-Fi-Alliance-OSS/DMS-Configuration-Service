@@ -14,14 +14,8 @@ public class IdentitySettings
     public required string ClientId { get; set; }
     public required string ClientSecret { get; set; }
     public required string Realm { get; set; }
-    public string? UserProfileUri { get; set; }
-    public string? AuthenticationScheme { get; set; }
-    public string? LoginProvider { get; set; }
-    public string? ResponseType { get; set; }
     public bool RequireHttpsMetadata { get; set; }
-    public bool GetClaimsFromUserInfoEndpoint { get; set; }
-    public bool SaveTokens { get; set; }
-    public List<string>? Scopes { get; set; }
+    public required string Audience { get; set; }
 }
 
 public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
@@ -49,6 +43,10 @@ public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
         if (string.IsNullOrWhiteSpace(options.Realm))
         {
             return ValidateOptionsResult.Fail("Missing required IdentitySettings value: Realm");
+        }
+        if (string.IsNullOrEmpty(options.Audience))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: Audience");
         }
         return ValidateOptionsResult.Success;
     }

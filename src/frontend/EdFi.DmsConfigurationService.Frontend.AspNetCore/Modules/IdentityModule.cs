@@ -21,23 +21,23 @@ public class IdentityModule : IEndpointModule
 
     public async Task<IResult> RegisterUser(RegisterRequest.Validator validator, RegisterRequest model, IUserRepository userRepository)
     {
+        await validator.GuardAsync(model);
         try
         {
-            await validator.GuardAsync(model);
             await userRepository.CreateUserAsync(model.Username!, model.EmailId!, model.Password!);
             return Results.Created();
         }
         catch (Exception ex)
         {
-            throw new IdentityException($"User registration failed with:{ex.Message}");
+            throw new IdentityException($"User registration failed with: {ex.Message}");
         }
     }
 
     public async Task<IResult> GetAccessToken(TokenRequest.Validator validator, TokenRequest model, ITokenManager tokenManager)
     {
+        await validator.GuardAsync(model);
         try
         {
-            await validator.GuardAsync(model);
             var response = await tokenManager.GetUserAccessTokenAsync([
                 new KeyValuePair<string, string>("username", model.Username!),
                 new KeyValuePair<string, string>("password", model.Password!)
@@ -47,7 +47,7 @@ public class IdentityModule : IEndpointModule
         }
         catch (Exception ex)
         {
-            throw new IdentityException($"User token generation failed with:{ex.Message}");
+            throw new IdentityException($"User token generation failed with: {ex.Message}");
         }
     }
 }

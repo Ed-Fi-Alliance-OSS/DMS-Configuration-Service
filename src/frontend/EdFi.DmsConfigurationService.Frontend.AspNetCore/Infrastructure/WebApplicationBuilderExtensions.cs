@@ -34,6 +34,7 @@ public static class WebApplicationBuilderExtensions
 
         webApplicationBuilder.Services.AddSingleton<IValidateOptions<IdentitySettings>, IdentitySettingsValidator>();
 
+        // For Security(Keycloak)
         IConfiguration config = webApplicationBuilder.Configuration;
         var settings = config.GetSection("IdentitySettings");
         var identitySettings = ReadSettings();
@@ -55,8 +56,8 @@ public static class WebApplicationBuilderExtensions
             {
                 options.MetadataAddress = metadataAddress;
                 options.Authority = identitySettings.Authority;
-                options.Audience = "account";
-                options.RequireHttpsMetadata = false;
+                options.Audience = identitySettings.Audience;
+                options.RequireHttpsMetadata = identitySettings.RequireHttpsMetadata;
 
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -103,7 +104,9 @@ public static class WebApplicationBuilderExtensions
                 IdentityServer = config.GetValue<string>("IdentitySettings:IdentityServer")!,
                 Realm = config.GetValue<string>("IdentitySettings:Realm")!,
                 ClientId = config.GetValue<string>("IdentitySettings:ClientId")!,
-                ClientSecret = config.GetValue<string>("IdentitySettings:ClientSecret")!
+                ClientSecret = config.GetValue<string>("IdentitySettings:ClientSecret")!,
+                RequireHttpsMetadata = config.GetValue<bool>("IdentitySettings:RequireHttpsMetadata"),
+                Audience = config.GetValue<string>("IdentitySettings:Audience")!
             };
         }
     }

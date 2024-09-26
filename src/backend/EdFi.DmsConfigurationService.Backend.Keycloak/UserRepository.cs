@@ -48,7 +48,6 @@ public class UserRepository(KeycloakContext keycloakContext) : IUserRepository
                     {
                         await _keycloakClient.AddRealmRoleMappingsToUserAsync(_realm, createdUser.Id, [userRole]);
                     }
-                    //await _keycloakClient.VerifyUserEmailAddressAsync(_realm, createdUser.Email);
                     await _keycloakClient.SetUserPasswordAsync(_realm, createdUser.Id, password);
                     return true;
                 }
