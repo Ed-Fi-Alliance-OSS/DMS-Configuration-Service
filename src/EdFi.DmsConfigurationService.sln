@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdFi.DmsConfigurationServic
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdFi.DmsConfigurationService.Backend.Keycloak", "backend\EdFi.DmsConfigurationService.Backend.Keycloak\EdFi.DmsConfigurationService.Backend.Keycloak.csproj", "{5582AF28-8E5E-40FC-BB13-DCD7EBE52C3B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest", "frontend\EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest\EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.csproj", "{95102070-16F1-48CF-B740-D69DA38EF25F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{5582AF28-8E5E-40FC-BB13-DCD7EBE52C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5582AF28-8E5E-40FC-BB13-DCD7EBE52C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5582AF28-8E5E-40FC-BB13-DCD7EBE52C3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{95102070-16F1-48CF-B740-D69DA38EF25F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{95102070-16F1-48CF-B740-D69DA38EF25F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{95102070-16F1-48CF-B740-D69DA38EF25F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{95102070-16F1-48CF-B740-D69DA38EF25F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{A1BEAD7A-70BD-46A9-8660-9ED779C55329} = {68E345E9-E50F-482A-8AFF-9E1156C448C9}
 		{047611CC-7A14-4CA3-AC07-ED3D0051AF9F} = {2CC76CE1-8C7E-45DC-B2E4-B786CDB16B69}
 		{5582AF28-8E5E-40FC-BB13-DCD7EBE52C3B} = {2CC76CE1-8C7E-45DC-B2E4-B786CDB16B69}
+		{95102070-16F1-48CF-B740-D69DA38EF25F} = {68E345E9-E50F-482A-8AFF-9E1156C448C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB22426B-6AA8-4C58-9557-376F107B547B}

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="pacts\" />
+    <Content Include="EdFi.DmsConfigurationService.Frontend.AspNetCore.nuspec" CopyToPublishDirectory="Always" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Moq" />
+    <PackageReference Include="PactNet" />
+    <PackageReference Include="PactNet.Output.Xunit" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="Castle.Core" />
+  </ItemGroup>
+
+</Project>
