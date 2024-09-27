@@ -10,4 +10,8 @@
     <ItemGroup>
         <Content Include="EdFi.DmsConfigurationService.Frontend.AspNetCore.nuspec" CopyToPublishDirectory="Always" CopyToOutputDirectory="Never" />
     </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" />
+      <PackageReference Include="FluentValidation.AspNetCore" />
+    </ItemGroup>
 </Project>
