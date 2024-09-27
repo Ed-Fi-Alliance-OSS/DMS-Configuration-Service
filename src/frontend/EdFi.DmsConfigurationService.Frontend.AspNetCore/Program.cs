@@ -12,6 +12,7 @@ var app = builder.Build();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseRouting();
+app.MapRouteEndpoints();
 
 app.MapGet("/", () => "DMS Configuration Service");
 app.MapGet("/ping", () => Results.Text(DateTime.Now.ToString()));
