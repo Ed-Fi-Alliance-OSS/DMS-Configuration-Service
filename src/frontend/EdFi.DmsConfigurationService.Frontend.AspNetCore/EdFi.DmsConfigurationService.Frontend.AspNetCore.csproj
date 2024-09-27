@@ -15,7 +15,4 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
       <PackageReference Include="System.Text.Json" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="Middleware\" />
-    </ItemGroup>
 </Project>
