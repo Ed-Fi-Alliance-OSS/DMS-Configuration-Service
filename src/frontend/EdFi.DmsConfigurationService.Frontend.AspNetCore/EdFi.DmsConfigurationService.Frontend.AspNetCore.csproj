@@ -16,10 +16,6 @@
       <PackageReference Include="System.Text.Json" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\backend\EdFi.DmsConfigurationService.Backend.Keycloak\EdFi.DmsConfigurationService.Backend.Keycloak.csproj" />
-      <ProjectReference Include="..\..\backend\EdFi.DmsConfigurationService.Backend\EdFi.DmsConfigurationService.Backend.csproj" />
-    </ItemGroup>
-    <ItemGroup>
       <Folder Include="Middleware\" />
     </ItemGroup>
 </Project>
