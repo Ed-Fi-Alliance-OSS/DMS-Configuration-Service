@@ -4,6 +4,7 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using Keycloak.Net;
+using Keycloak.Net.Models.Clients;
 using Keycloak.Net.Models.Roles;
 using Keycloak.Net.Models.Users;
 
@@ -14,6 +15,27 @@ public class UserRepository(KeycloakContext keycloakContext) : IUserRepository
     private readonly KeycloakClient _keycloakClient = new(keycloakContext.Url, keycloakContext.ClientSecret,
         new KeycloakOptions(adminClientId: keycloakContext.ClientId));
     private readonly string _realm = keycloakContext.Realm!;
+
+    public async Task<bool> CreateClientAsync(string clientId, string clientSecret, string displayName)
+    {
+        try
+        {
+            var client = new Client
+            {
+                ClientId = clientId,
+                Enabled = true,
+                Secret = clientSecret,
+                Name = displayName,
+                ServiceAccountsEnabled = true
+            };
+            var createdClient = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
+            return string.IsNullOrEmpty(createdClient) ? throw new Exception($"Error while creating the client: {clientId}") : true;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ex.Message);
+        }
+    }
 
     public async Task<bool> CreateUserAsync(string userName, string email, string password)
     {
@@ -74,5 +96,10 @@ public class UserRepository(KeycloakContext keycloakContext) : IUserRepository
     private async Task<IEnumerable<User>> GetAllUsersAsync()
     {
         return await _keycloakClient.GetUsersAsync(_realm);
+    }
+
+    private async Task<IEnumerable<Client>> GetAllClientsAsync()
+    {
+        return await _keycloakClient.GetClientsAsync(_realm);
     }
 }

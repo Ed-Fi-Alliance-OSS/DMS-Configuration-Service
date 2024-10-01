@@ -8,4 +8,5 @@ namespace EdFi.DmsConfigurationService.Backend;
 public interface ITokenManager
 {
     public Task<string> GetUserAccessTokenAsync(IEnumerable<KeyValuePair<string, string>> credentials);
+    public Task<string> GetAccessTokenAsync(IEnumerable<KeyValuePair<string, string>> credentials);
 }

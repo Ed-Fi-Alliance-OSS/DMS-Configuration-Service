@@ -8,4 +8,5 @@ namespace EdFi.DmsConfigurationService.Backend;
 public interface IUserRepository
 {
     public Task<bool> CreateUserAsync(string userName, string email, string password);
+    public Task<bool> CreateClientAsync(string clientId, string clientSecret, string displayName);
 }

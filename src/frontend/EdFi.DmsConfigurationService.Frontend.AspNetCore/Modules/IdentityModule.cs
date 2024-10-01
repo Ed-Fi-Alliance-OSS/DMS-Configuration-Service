@@ -16,7 +16,9 @@ public class IdentityModule : IEndpointModule
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/connect/register", RegisterUser);
+        endpoints.MapPost("/connect/register-client", RegisterClient);
         endpoints.MapPost("/connect/token", GetAccessToken);
+        endpoints.MapPost("/connect/token-client", GetClientAccessToken);
     }
 
     public async Task<IResult> RegisterUser(RegisterRequest.Validator validator, RegisterRequest model, IUserRepository userRepository)
@@ -33,6 +35,21 @@ public class IdentityModule : IEndpointModule
         }
     }
 
+    public async Task<IResult> RegisterClient(RegisterClientRequest.Validator validator, RegisterClientRequest model, IUserRepository userRepository)
+    {
+        await validator.GuardAsync(model);
+        try
+        {
+            await userRepository.CreateClientAsync(model.ClientId!, model.ClientSecret!, model.DisplayName!);
+            return Results.Created();
+        }
+        catch (Exception ex)
+        {
+            throw new IdentityException($"Client registration failed with: {ex.Message}");
+        }
+    }
+
+
     public async Task<IResult> GetAccessToken(TokenRequest.Validator validator, TokenRequest model, ITokenManager tokenManager)
     {
         await validator.GuardAsync(model);
@@ -41,6 +58,24 @@ public class IdentityModule : IEndpointModule
             var response = await tokenManager.GetUserAccessTokenAsync([
                 new KeyValuePair<string, string>("username", model.Username!),
                 new KeyValuePair<string, string>("password", model.Password!)
+                ]);
+            var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(response);
+            return Results.Ok(tokenResponse);
+        }
+        catch (Exception ex)
+        {
+            throw new IdentityException($"User token generation failed with: {ex.Message}");
+        }
+    }
+
+    public async Task<IResult> GetClientAccessToken(TokenClientRequest.Validator validator, TokenClientRequest model, ITokenManager tokenManager)
+    {
+        await validator.GuardAsync(model);
+        try
+        {
+            var response = await tokenManager.GetAccessTokenAsync([
+                new KeyValuePair<string, string>("client_id", model.ClientId!),
+                new KeyValuePair<string, string>("client_secret", model.ClientSecret!)
                 ]);
             var tokenResponse = JsonSerializer.Deserialize<TokenResponse>(response);
             return Results.Ok(tokenResponse);

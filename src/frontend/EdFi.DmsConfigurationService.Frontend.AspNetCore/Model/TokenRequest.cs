@@ -22,3 +22,18 @@ public class TokenRequest
     }
 }
 
+public class TokenClientRequest
+{
+    public string? ClientId { get; set; }
+    public string? ClientSecret { get; set; }
+
+    public class Validator : AbstractValidator<TokenClientRequest>
+    {
+        public Validator()
+        {
+            RuleFor(m => m.ClientId).NotEmpty();
+            RuleFor(m => m.ClientSecret).NotEmpty();
+        }
+    }
+}
+
