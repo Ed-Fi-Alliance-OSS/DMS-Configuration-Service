@@ -3,14 +3,18 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-var builder = WebApplication.CreateBuilder(args);
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.AddServices();
 var app = builder.Build();
 
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseRouting();
+app.MapRouteEndpoints();
 
 app.MapGet("/", () => "DMS Configuration Service");
-app.MapGet("/ping", () => Results.Text(DateTime.Now.ToString()));
 
 app.Run();
 
