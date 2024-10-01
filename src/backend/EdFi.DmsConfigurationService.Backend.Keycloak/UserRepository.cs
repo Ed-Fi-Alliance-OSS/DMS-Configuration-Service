@@ -3,6 +3,7 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+
 using Keycloak.Net;
 using Keycloak.Net.Models.Clients;
 using Keycloak.Net.Models.Roles;
@@ -20,6 +21,7 @@ public class UserRepository(KeycloakContext keycloakContext) : IUserRepository
     {
         try
         {
+            var realmRoles = await _keycloakClient.GetRolesAsync(_realm);
             var client = new Client
             {
                 ClientId = clientId,
@@ -28,13 +30,35 @@ public class UserRepository(KeycloakContext keycloakContext) : IUserRepository
                 Name = displayName,
                 ServiceAccountsEnabled = true
             };
-            var createdClient = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
-            return string.IsNullOrEmpty(createdClient) ? throw new Exception($"Error while creating the client: {clientId}") : true;
+
+            Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals("config-service-app", StringComparison.InvariantCultureIgnoreCase));
+
+            var createdClientId = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
+            if (!string.IsNullOrEmpty(createdClientId))
+            {
+                if (clientRole != null)
+                {
+                    var serviceAccountUserId = await GetServiceAccountUserIdAsync(createdClientId);
+                    var result = await _keycloakClient.AddRealmRoleMappingsToUserAsync(_realm, serviceAccountUserId, [clientRole]);
+                    return true;
+                }
+            }
+            else
+            {
+                throw new Exception($"Error while creating the client: {clientId}");
+            }
+            return false;
         }
         catch (Exception ex)
         {
             throw new Exception(ex.Message);
         }
+    }
+
+    public async Task<string> GetServiceAccountUserIdAsync(string clientId)
+    {
+        var serviceAccountUser = await _keycloakClient.GetUserForServiceAccountAsync(_realm, clientId);
+        return serviceAccountUser.Id;
     }
 
     public async Task<bool> CreateUserAsync(string userName, string email, string password)
@@ -96,10 +120,5 @@ public class UserRepository(KeycloakContext keycloakContext) : IUserRepository
     private async Task<IEnumerable<User>> GetAllUsersAsync()
     {
         return await _keycloakClient.GetUsersAsync(_realm);
-    }
-
-    private async Task<IEnumerable<Client>> GetAllClientsAsync()
-    {
-        return await _keycloakClient.GetClientsAsync(_realm);
     }
 }
