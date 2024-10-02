@@ -3,6 +3,7 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 using FluentValidation;
 using System.Net;
 using System.Text.Json;
@@ -57,6 +58,11 @@ public class RequestLoggingMiddleware
                     }
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     await response.WriteAsync(JsonSerializer.Serialize(validationResponse));
+                    break;
+
+                case IdentityException identityException:
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    await response.WriteAsync(JsonSerializer.Serialize(identityException.Message));
                     break;
 
                 default:

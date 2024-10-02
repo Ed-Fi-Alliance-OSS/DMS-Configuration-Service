@@ -12,6 +12,8 @@ var app = builder.Build();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapRouteEndpoints();
 
 app.MapGet("/", () => "DMS Configuration Service");
