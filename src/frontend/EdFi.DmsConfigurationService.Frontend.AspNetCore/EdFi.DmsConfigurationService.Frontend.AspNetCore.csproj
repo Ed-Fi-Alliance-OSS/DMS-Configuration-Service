@@ -18,5 +18,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\backend\EdFi.DmsConfigurationService.Backend.Keycloak\EdFi.DmsConfigurationService.Backend.Keycloak.csproj" />
       <ProjectReference Include="..\..\backend\EdFi.DmsConfigurationService.Backend\EdFi.DmsConfigurationService.Backend.csproj" />
+      <PackageReference Include="Microsoft.OpenApi" />
+      <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 </Project>

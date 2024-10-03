@@ -7,6 +7,16 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 
 public class HealthModule : IEndpointModule
 {
+    private readonly IHttpClientFactory factory;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Health"/> class.
+    /// </summary>
+    /// <param name="factory">HTTP client factory</param>
+    public HealthModule(IHttpClientFactory factory)
+    {
+        this.factory = factory;
+    }
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/health", () => Results.Text(DateTime.Now.ToString()));
