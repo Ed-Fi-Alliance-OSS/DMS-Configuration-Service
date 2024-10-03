@@ -3,12 +3,14 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
+using System.Collections.Generic;
 
-public class HealthModule : IEndpointModule
+namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
-    public void MapEndpoints(IEndpointRouteBuilder endpoints)
+    public class ProviderState
     {
-        endpoints.MapGet("/health", () => Results.Text(DateTime.Now.ToString()));
+        public required string State { get; set; }
+
+        public required IDictionary<string, string> Params { get; set; }
     }
 }
