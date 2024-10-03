@@ -5,6 +5,7 @@
 
 using System.Net;
 using FluentAssertions;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using NUnit.Framework;
 
@@ -17,7 +18,10 @@ public class HealthTests
     public async Task TestPingEndpoint()
     {
         // Arrange
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Test");
+        });
         using var client = factory.CreateClient();
 
         // Act
