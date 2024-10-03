@@ -6,6 +6,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using EdFi.DmsConfigurationService.Backend;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Configuration;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 using FakeItEasy;
 using FluentAssertions;
@@ -53,7 +54,8 @@ public class RegisterEndpointTests
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        content.Should().Contain("CSClient1");
     }
 
     [Test]
@@ -179,6 +181,35 @@ public class RegisterEndpointTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         content.Should().Contain("Client with the same Client Id already exists. Please provide different Client Id.");
+    }
+
+    [Test]
+    public async Task When_allow_registration_is_disabled()
+    {
+        // Arrange
+        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        {
+            builder.UseEnvironment("Test");
+            builder.ConfigureServices(
+                (collection) =>
+                {
+                    collection.Configure<IdentitySettings>(opts =>
+                    {
+                        opts.AllowRegistration = false;
+                    });
+                    collection.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
+                    collection.AddTransient((x) => _clientRepository!);
+                }
+            );
+        });
+        using var client = factory.CreateClient();
+
+        // Act
+        var requestContent = new { clientid = "CSClient2", clientsecret = "test123@Puiu", displayname = "CSClient2@cs.com" };
+        var response = await client.PostAsJsonAsync("/connect/register", requestContent);
+
+        // Assert
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 }
 

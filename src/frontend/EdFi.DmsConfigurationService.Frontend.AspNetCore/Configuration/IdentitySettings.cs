@@ -16,6 +16,7 @@ public class IdentitySettings
     public required string ClientSecret { get; set; }
     public required string Realm { get; set; }
     public bool RequireHttpsMetadata { get; set; }
+    public bool AllowRegistration { get; set; }
     public required string Audience { get; set; }
     public required string RoleClaimType { get; set; }
 }

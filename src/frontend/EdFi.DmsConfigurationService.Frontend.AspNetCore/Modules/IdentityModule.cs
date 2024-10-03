@@ -7,6 +7,8 @@ using System.Text.Json;
 using EdFi.DmsConfigurationService.Backend;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
+using Microsoft.Extensions.Options;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Configuration;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 
@@ -18,18 +20,24 @@ public class IdentityModule : IEndpointModule
         endpoints.MapPost("/connect/token", GetClientAccessToken);
     }
 
-    public async Task<IResult> RegisterClient(RegisterRequest.Validator validator, RegisterRequest model, IClientRepository clientRepository)
+    public async Task<IResult> RegisterClient(RegisterRequest.Validator validator, RegisterRequest model,
+        IClientRepository clientRepository, IOptions<IdentitySettings> identitySettings)
     {
-        await validator.GuardAsync(model);
-        try
+        var allowRegistration = identitySettings.Value.AllowRegistration;
+        if (allowRegistration)
         {
-            await clientRepository.CreateClientAsync(model.ClientId!, model.ClientSecret!, model.DisplayName!);
-            return Results.Created();
+            await validator.GuardAsync(model);
+            try
+            {
+                await clientRepository.CreateClientAsync(model.ClientId!, model.ClientSecret!, model.DisplayName!);
+                return Results.Ok($"Registered client {model.ClientId} successfully.");
+            }
+            catch (Exception ex)
+            {
+                throw new IdentityException($"Client registration failed with: {ex.Message}");
+            }
         }
-        catch (Exception ex)
-        {
-            throw new IdentityException($"Client registration failed with: {ex.Message}");
-        }
+        return Results.Forbid();
     }
 
     public async Task<IResult> GetClientAccessToken(TokenRequest.Validator validator, TokenRequest model, ITokenManager tokenManager)
