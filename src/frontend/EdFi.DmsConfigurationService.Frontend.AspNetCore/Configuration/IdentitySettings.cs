@@ -3,7 +3,6 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-
 using Microsoft.Extensions.Options;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Configuration;
@@ -19,6 +18,7 @@ public class IdentitySettings
     public bool AllowRegistration { get; set; }
     public required string Audience { get; set; }
     public required string RoleClaimType { get; set; }
+    public required string ServiceRole { get; set; }
 }
 
 public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
@@ -54,6 +54,10 @@ public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
         if (string.IsNullOrEmpty(options.RoleClaimType))
         {
             return ValidateOptionsResult.Fail("Missing required IdentitySettings value: RoleClaimType");
+        }
+        if (string.IsNullOrEmpty(options.ServiceRole))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: ServiceRole");
         }
         return ValidateOptionsResult.Success;
     }

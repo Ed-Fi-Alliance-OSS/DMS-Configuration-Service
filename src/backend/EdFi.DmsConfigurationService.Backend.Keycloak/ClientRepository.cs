@@ -31,7 +31,7 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
                 ProtocolMappers = ConfigServiceProtocolMapper()
             };
 
-            Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals("config-service-app", StringComparison.InvariantCultureIgnoreCase));
+            Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals(keycloakContext.ServiceRole, StringComparison.InvariantCultureIgnoreCase));
 
             var createdClientId = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
             if (!string.IsNullOrEmpty(createdClientId))

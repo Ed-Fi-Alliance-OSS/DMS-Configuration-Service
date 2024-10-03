@@ -7,6 +7,5 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 
 public static class SecurityConstants
 {
-    public static string ServicePolicy = "ServicePolicy";
-    public static string AppRole = "config-service-app";
+    public const string ServicePolicy = "ServicePolicy";
 }

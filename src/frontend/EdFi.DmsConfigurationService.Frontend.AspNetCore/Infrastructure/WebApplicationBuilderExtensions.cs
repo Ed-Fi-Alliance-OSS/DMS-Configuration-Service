@@ -44,7 +44,8 @@ public static class WebApplicationBuilderExtensions
             identitySettings.Realm,
             identitySettings.ClientId,
             identitySettings.ClientSecret,
-            identitySettings.RoleClaimType));
+            identitySettings.RoleClaimType,
+            identitySettings.ServiceRole));
 
         webApplicationBuilder.Services.AddHttpClient();
 
@@ -77,7 +78,7 @@ public static class WebApplicationBuilderExtensions
                 };
             });
         webApplicationBuilder.Services.AddAuthorization(options => options.AddPolicy(SecurityConstants.ServicePolicy,
-            policy => policy.RequireClaim(ClaimTypes.Role, SecurityConstants.AppRole)));
+            policy => policy.RequireClaim(ClaimTypes.Role, identitySettings.ServiceRole)));
 
         IdentitySettings ReadSettings()
         {
@@ -90,7 +91,8 @@ public static class WebApplicationBuilderExtensions
                 ClientSecret = config.GetValue<string>("IdentitySettings:ClientSecret")!,
                 RequireHttpsMetadata = config.GetValue<bool>("IdentitySettings:RequireHttpsMetadata"),
                 Audience = config.GetValue<string>("IdentitySettings:Audience")!,
-                RoleClaimType = config.GetValue<string>("IdentitySettings:RoleClaimType")!
+                RoleClaimType = config.GetValue<string>("IdentitySettings:RoleClaimType")!,
+                ServiceRole = config.GetValue<string>("IdentitySettings:ServiceRole")!
             };
         }
     }
