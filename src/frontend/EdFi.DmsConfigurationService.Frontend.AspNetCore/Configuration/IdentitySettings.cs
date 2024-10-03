@@ -17,6 +17,7 @@ public class IdentitySettings
     public required string Realm { get; set; }
     public bool RequireHttpsMetadata { get; set; }
     public required string Audience { get; set; }
+    public required string RoleClaimType { get; set; }
 }
 
 public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
@@ -48,6 +49,10 @@ public class IdentitySettingsValidator : IValidateOptions<IdentitySettings>
         if (string.IsNullOrEmpty(options.Audience))
         {
             return ValidateOptionsResult.Fail("Missing required IdentitySettings value: Audience");
+        }
+        if (string.IsNullOrEmpty(options.RoleClaimType))
+        {
+            return ValidateOptionsResult.Fail("Missing required IdentitySettings value: RoleClaimType");
         }
         return ValidateOptionsResult.Success;
     }

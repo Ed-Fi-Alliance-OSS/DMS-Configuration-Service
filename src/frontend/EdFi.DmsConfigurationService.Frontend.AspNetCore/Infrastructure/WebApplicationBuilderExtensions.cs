@@ -13,8 +13,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication;
-using System.Text.Json.Nodes;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 
@@ -41,7 +39,12 @@ public static class WebApplicationBuilderExtensions
         webApplicationBuilder.Services.Configure<IdentitySettings>(settings);
 
         webApplicationBuilder.Services.AddScoped(x =>
-            new KeycloakContext(identitySettings.IdentityServer, identitySettings.Realm, identitySettings.ClientId, identitySettings.ClientSecret));
+            new KeycloakContext(
+            identitySettings.IdentityServer,
+            identitySettings.Realm,
+            identitySettings.ClientId,
+            identitySettings.ClientSecret,
+            identitySettings.RoleClaimType));
 
         webApplicationBuilder.Services.AddHttpClient();
 
@@ -60,29 +63,15 @@ public static class WebApplicationBuilderExtensions
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateAudience = true,
-                    ValidateIssuer = true
+                    ValidateIssuer = true,
+                    RoleClaimType = identitySettings.RoleClaimType
                 };
+
                 options.Events = new JwtBearerEvents
                 {
                     OnAuthenticationFailed = context =>
                     {
                         Console.WriteLine($"Authentication failed: {context.Exception.Message}");
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
-                    {
-                        List<AuthenticationToken> tokens = context.Properties!.GetTokens().ToList();
-                        ClaimsIdentity claimsIdentity = (ClaimsIdentity)context.Principal!.Identity!;
-                        var realm_access = claimsIdentity.FindFirst((claim) => claim.Type == "realm_access")?.Value;
-                        if (realm_access != null)
-                        {
-                            JsonNode? node = JsonNode.Parse(realm_access);
-                            var roleAccess = node!["roles"] as JsonArray;
-                            foreach (var role in roleAccess!)
-                            {
-                                claimsIdentity.AddClaim(new Claim(ClaimTypes.Role, role!.ToString()));
-                            }
-                        }
                         return Task.CompletedTask;
                     }
                 };
@@ -100,7 +89,8 @@ public static class WebApplicationBuilderExtensions
                 ClientId = config.GetValue<string>("IdentitySettings:ClientId")!,
                 ClientSecret = config.GetValue<string>("IdentitySettings:ClientSecret")!,
                 RequireHttpsMetadata = config.GetValue<bool>("IdentitySettings:RequireHttpsMetadata"),
-                Audience = config.GetValue<string>("IdentitySettings:Audience")!
+                Audience = config.GetValue<string>("IdentitySettings:Audience")!,
+                RoleClaimType = config.GetValue<string>("IdentitySettings:RoleClaimType")!
             };
         }
     }

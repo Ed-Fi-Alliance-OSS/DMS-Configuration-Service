@@ -11,7 +11,7 @@ public class SecuredModule : IEndpointModule
 {
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/secure", GetDetails).RequireAuthorization(SecurityConstants.ServicePolicy);
+        endpoints.MapGet("/secure", GetDetails).RequireAuthorizationWithPolicy();
     }
 
     public IResult GetDetails(HttpContext httpContext)

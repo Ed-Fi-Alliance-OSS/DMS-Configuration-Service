@@ -20,13 +20,15 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
         try
         {
             var realmRoles = await _keycloakClient.GetRolesAsync(_realm);
+
             var client = new Client
             {
                 ClientId = clientId,
                 Enabled = true,
                 Secret = clientSecret,
                 Name = displayName,
-                ServiceAccountsEnabled = true
+                ServiceAccountsEnabled = true,
+                ProtocolMappers = ConfigServiceProtocolMapper()
             };
 
             Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals("config-service-app", StringComparison.InvariantCultureIgnoreCase));
@@ -46,6 +48,29 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
                 throw new Exception($"Error while creating the client: {clientId}");
             }
             return false;
+
+            List<ClientProtocolMapper> ConfigServiceProtocolMapper()
+            {
+                return
+                [
+                    new ClientProtocolMapper
+                    {
+                        Name = "Configuration service role mapper",
+                        Protocol = "openid-connect",
+                        ProtocolMapper = "oidc-usermodel-realm-role-mapper",
+                        Config = new Dictionary<string, string>
+                        {
+                            { "claim.name", keycloakContext.RoleClaimType },
+                            { "jsonType.label", "String" },
+                            { "user.attribute", "roles" },
+                            { "multivalued", "true" },
+                            { "id.token.claim", "true" },
+                            { "access.token.claim", "true" },
+                            { "userinfo.token.claim", "true" }
+                        }
+                    }
+                ];
+            }
         }
         catch (Exception ex)
         {
