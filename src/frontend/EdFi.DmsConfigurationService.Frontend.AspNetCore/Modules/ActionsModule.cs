@@ -19,12 +19,36 @@ public class ActionsModule : IEndpointModule
     {
         try
         {
-            var response = new ActionResponse[] {
-                    new ActionResponse {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
-                    new ActionResponse {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
-                    new ActionResponse {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
-                    new ActionResponse {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/odsapi/actions/delete"},
-                };
+            var response = new ActionResponse
+            {
+                AdminActions = new[]
+                {
+                    new AdminAction
+                    {
+                        Id = 1,
+                        Name = "Create",
+                        Uri = "uri://ed-fi.org/odsapi/actions/create",
+                    },
+                    new AdminAction
+                    {
+                        Id = 2,
+                        Name = "Read",
+                        Uri = "uri://ed-fi.org/odsapi/actions/read",
+                    },
+                    new AdminAction
+                    {
+                        Id = 3,
+                        Name = "Update",
+                        Uri = "uri://ed-fi.org/odsapi/actions/update",
+                    },
+                    new AdminAction
+                    {
+                        Id = 4,
+                        Name = "Delete",
+                        Uri = "uri://ed-fi.org/odsapi/actions/delete",
+                    },
+                },
+            };
 
             return Results.Ok(response);
         }
