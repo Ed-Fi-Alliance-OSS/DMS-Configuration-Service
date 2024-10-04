@@ -6,7 +6,13 @@
 using System.Text.Json.Serialization;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
+
 public class ActionResponse
+{
+    public required AdminAction[] Actions;
+}
+
+public class AdminAction
 {
     [JsonPropertyName("id")]
     public required int Id { get; set; }

@@ -31,17 +31,17 @@ public class RegisterActionEndpointTests
         });
         using var client = factory.CreateClient();
 
-        var testActionResponse = new ActionResponse[] {
-            new ActionResponse {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
-            new ActionResponse {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
-            new ActionResponse {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
-            new ActionResponse {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/odsapi/actions/delete"}
+        var testActionResponse = new AdminAction[] {
+            new AdminAction {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
+            new AdminAction {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
+            new AdminAction {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
+            new AdminAction {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/odsapi/actions/delete"}
         };
 
         // Act
         var response = await client.GetAsync("/v2/actions");
         var content = await response.Content.ReadAsStringAsync();
-        var deserializedResponse = JsonSerializer.Deserialize<ActionResponse[]>(content);
+        var deserializedResponse = JsonSerializer.Deserialize<AdminAction[]>(content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
