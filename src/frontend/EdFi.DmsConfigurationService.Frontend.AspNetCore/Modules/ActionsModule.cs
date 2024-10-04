@@ -3,12 +3,8 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using EdFi.DmsConfigurationService.Backend;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 
 public class ActionsModule : IEndpointModule
@@ -27,14 +23,14 @@ public class ActionsModule : IEndpointModule
             // TODO(): Ensure claims and role are valid for an admin client account with the role Configuration Service Admin. Otherwise 403.
 
             // TODO(): Update response to use a Data Transfer Object.
-            return Results.Ok(
-                new[] {
-                    new {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
-                    new {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
-                    new {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
-                    new {Id = 4, Name = "Destroy", Uri = "uri://ed-fi.org/odsapi/actions/delete"},
-                }
-            );
+            var response = new ActionResponse[] {
+                    new ActionResponse {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
+                    new ActionResponse {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
+                    new ActionResponse {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
+                    new ActionResponse {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/odsapi/actions/delete"},
+                };
+
+            return Results.Ok(response);
         }
         catch (Exception ex)
         {
