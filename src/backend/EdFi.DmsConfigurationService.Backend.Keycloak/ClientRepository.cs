@@ -31,6 +31,7 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
                 ProtocolMappers = ConfigServiceProtocolMapper()
             };
 
+            // Read service role from the realm
             Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals(keycloakContext.ServiceRole, StringComparison.InvariantCultureIgnoreCase));
 
             var createdClientId = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
@@ -38,16 +39,20 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
             {
                 if (clientRole != null)
                 {
+                    // Assign the service role to client's service account
                     var serviceAccountUserId = await GetServiceAccountUserIdAsync(createdClientId);
                     var result = await _keycloakClient.AddRealmRoleMappingsToUserAsync(_realm, serviceAccountUserId, [clientRole]);
-                    return true;
+                    return result;
+                }
+                else
+                {
+                    throw new Exception($"Role {keycloakContext.ServiceRole} not found.");
                 }
             }
             else
             {
                 throw new Exception($"Error while creating the client: {clientId}");
             }
-            return false;
 
             List<ClientProtocolMapper> ConfigServiceProtocolMapper()
             {
@@ -72,9 +77,9 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
                 ];
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            throw new Exception(ex.Message);
+            throw;
         }
     }
 

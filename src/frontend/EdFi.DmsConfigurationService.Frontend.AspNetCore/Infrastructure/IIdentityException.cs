@@ -7,13 +7,7 @@ using System.Net;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 
-public interface IIdentityException
-{
-    string? Message { get; }
-    HttpStatusCode? StatusCode { get; }
-}
-
-public class IdentityException : Exception, IIdentityException
+public class IdentityException : Exception
 {
     public IdentityException(string message) : base(message) { }
     public IdentityException(string message, Exception innerException) : base(message, innerException) { }
