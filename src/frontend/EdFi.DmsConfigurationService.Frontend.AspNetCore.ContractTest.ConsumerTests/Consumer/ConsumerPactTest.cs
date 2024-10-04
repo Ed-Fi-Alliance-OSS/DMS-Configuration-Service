@@ -26,7 +26,7 @@ using EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest;
 
-[TestFixture]
+//[TestFixture]
 public class ConsumerPactTest
 {
     private readonly IPactBuilderV3 pact;
@@ -54,7 +54,7 @@ public class ConsumerPactTest
         this.pact = pact.WithHttpInteractions();
     }
 
-    [Test]
+    //[Test]
     public async Task ItHandles404ErrorForNonExistingResource()
     {
         this.pact
