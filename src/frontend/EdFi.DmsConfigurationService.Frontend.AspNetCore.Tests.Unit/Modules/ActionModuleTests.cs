@@ -37,7 +37,6 @@ public class RegisterActionEndpointTests
             new AdminAction {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
             new AdminAction {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/odsapi/actions/delete"}
         };
-
         // Act
         var response = await client.GetAsync("/v2/actions");
         var content = await response.Content.ReadAsStringAsync();
@@ -47,4 +46,5 @@ public class RegisterActionEndpointTests
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         deserializedResponse.Should().BeEquivalentTo(testActionResponse);
     }
-}
+};
+

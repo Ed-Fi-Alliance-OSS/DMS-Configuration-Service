@@ -23,3 +23,8 @@ public class AdminAction
     [JsonPropertyName("uri")]
     public required string Uri { get; set; }
 }
+
+public class ActionResponse
+{
+    public required AdminAction[] AdminActions;
+}
