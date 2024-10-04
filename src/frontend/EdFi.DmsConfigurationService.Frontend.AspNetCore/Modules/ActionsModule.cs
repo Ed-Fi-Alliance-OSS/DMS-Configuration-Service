@@ -26,8 +26,15 @@ public class ActionsModule : IEndpointModule
 
             // TODO(): Ensure claims and role are valid for an admin client account with the role Configuration Service Admin. Otherwise 403.
 
-            // TODO(): Return a JSON list of valid actions  according to Admin API 2's spec.
-            return Results.Ok("results");
+            // TODO(): Update response to use a Data Transfer Object.
+            return Results.Ok(
+                new[] {
+                    new {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
+                    new {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
+                    new {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
+                    new {Id = 4, Name = "Destroy", Uri = "uri://ed-fi.org/odsapi/actions/delete"},
+                }
+            );
         }
         catch (Exception ex)
         {
