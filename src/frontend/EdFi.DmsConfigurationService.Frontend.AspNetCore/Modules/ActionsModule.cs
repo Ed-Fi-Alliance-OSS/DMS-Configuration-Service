@@ -19,10 +19,6 @@ public class ActionsModule : IEndpointModule
     {
         try
         {
-            // TODO(): Ensure the request contains a non-expired token with correct issuer and audience. Otherwise 401.
-
-            // TODO(): Ensure claims and role are valid for an admin client account with the role Configuration Service Admin. Otherwise 403.
-
             var response = new ActionResponse[] {
                     new ActionResponse {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
                     new ActionResponse {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
