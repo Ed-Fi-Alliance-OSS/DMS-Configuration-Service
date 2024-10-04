@@ -17,7 +17,6 @@ app.UseAuthorization();
 app.MapRouteEndpoints();
 
 app.MapGet("/", () => "DMS Configuration Service");
-app.MapGet("/ping", () => Results.Text(DateTime.Now.ToString()));
 
 app.Run();
 

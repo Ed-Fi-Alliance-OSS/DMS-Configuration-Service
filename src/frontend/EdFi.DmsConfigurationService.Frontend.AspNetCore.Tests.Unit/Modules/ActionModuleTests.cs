@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.Json;
 using NUnit.Framework;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Tests.Unit.Modules;
@@ -46,7 +47,7 @@ public class RegisterActionEndpointTests
         // Act
         var response = await client.GetAsync("/v2/actions");
         var content = await response.Content.ReadAsStringAsync();
-        var deserialized = JsonConvert.DeserializeObject<ActionResponse[]>(content);
+        var deserialized = JsonSerializer.Deserialize<ActionResponse[]>(content);
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.OK);
