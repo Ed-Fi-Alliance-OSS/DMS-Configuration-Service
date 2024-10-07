@@ -14,16 +14,16 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PactNet;
 using PactNet.Infrastructure.Outputters;
-using Microsoft.Extensions.Logging;
 
-namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest;
+namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ConsumerTests.Consumer;
 
 [TestFixture]
 public class ConsumerIdentityTest
 {
-    private IPactBuilderV4? pact;
+    private IPactBuilderV4? _pact;
     private ITokenManager? _tokenManager;
 
     [SetUp]
@@ -35,7 +35,7 @@ public class ConsumerIdentityTest
             Outputters = new List<IOutput>
             {
                 new ConsoleOutput(),
-                new FileOutput("../../../logs/pact-log.txt")  // Logs de Pact
+                new FileOutput("../../../logs/_pact-log.txt")  // Logs de Pact
             },
             DefaultJsonSettings = new JsonSerializerOptions
             {
@@ -46,7 +46,7 @@ public class ConsumerIdentityTest
             LogLevel = PactLogLevel.Debug
         };
 
-        pact = Pact.V4("DMS API Consumer", "DMS Configuration Service API", config).WithHttpInteractions();
+        _pact = Pact.V4("DMS API Consumer", "DMS Configuration Service API", config).WithHttpInteractions();
 
         _tokenManager = A.Fake<ITokenManager>();
         string token = """
@@ -65,7 +65,7 @@ public class ConsumerIdentityTest
     [Test]
     public async Task VerifyWithValidCredentials()
     {
-        pact?.UponReceiving("given a valid credentials")
+        _pact?.UponReceiving("given a valid credentials")
             .WithRequest(HttpMethod.Post, "/connect/token")
             .WithHeader("Content-Type", "application/json") // Make sure that the header matches
             .WithJsonBody(new { clientid = "CSClient1", clientsecret = "test123@Puiu" })
@@ -78,15 +78,15 @@ public class ConsumerIdentityTest
                 token_type = "bearer"
             });
 
-        await pact!.VerifyAsync(async ctx =>
+        await _pact!.VerifyAsync(async _ =>
         {
             await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Test");
                 builder.ConfigureServices(services =>
                 {
-                    services.AddTransient((x) => new TokenRequest.Validator());
-                    services.AddTransient((x) => _tokenManager!);
+                    services.AddTransient((_) => new TokenRequest.Validator());
+                    services.AddTransient((_) => _tokenManager!);
                 });
 
                 builder.ConfigureLogging(logging =>
