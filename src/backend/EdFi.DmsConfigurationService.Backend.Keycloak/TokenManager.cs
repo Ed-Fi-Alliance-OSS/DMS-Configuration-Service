@@ -20,7 +20,7 @@ public class TokenManager(KeycloakContext keycloakContext) : ITokenManager
         var response = await client.PostAsync(path, content);
         var responseString = await response.Content.ReadAsStringAsync();
 
-        if (response != null && response.IsSuccessStatusCode)
+        if (response.IsSuccessStatusCode)
         {
             return responseString;
         }

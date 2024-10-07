@@ -17,64 +17,62 @@ public class ClientRepository(KeycloakContext keycloakContext) : IClientReposito
 
     public async Task<bool> CreateClientAsync(string clientId, string clientSecret, string displayName)
     {
-        try
+        var realmRoles = await _keycloakClient.GetRolesAsync(_realm);
+
+        var client = new Client
         {
-            var realmRoles = await _keycloakClient.GetRolesAsync(_realm);
+            ClientId = clientId,
+            Enabled = true,
+            Secret = clientSecret,
+            Name = displayName,
+            ServiceAccountsEnabled = true,
+            ProtocolMappers = ConfigServiceProtocolMapper()
+        };
 
-            var client = new Client
+        // Read service role from the realm
+        Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals(keycloakContext.ServiceRole, StringComparison.InvariantCultureIgnoreCase));
+
+        var createdClientId = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
+        if (!string.IsNullOrEmpty(createdClientId))
+        {
+            if (clientRole != null)
             {
-                ClientId = clientId,
-                Enabled = true,
-                Secret = clientSecret,
-                Name = displayName,
-                ServiceAccountsEnabled = true,
-                ProtocolMappers = ConfigServiceProtocolMapper()
-            };
-
-            Role? clientRole = realmRoles.FirstOrDefault(x => x.Name.Equals(keycloakContext.ServiceRole, StringComparison.InvariantCultureIgnoreCase));
-
-            var createdClientId = await _keycloakClient.CreateClientAndRetrieveClientIdAsync(_realm, client);
-            if (!string.IsNullOrEmpty(createdClientId))
-            {
-                if (clientRole != null)
-                {
-                    var serviceAccountUserId = await GetServiceAccountUserIdAsync(createdClientId);
-                    var result = await _keycloakClient.AddRealmRoleMappingsToUserAsync(_realm, serviceAccountUserId, [clientRole]);
-                    return true;
-                }
+                // Assign the service role to client's service account
+                var serviceAccountUserId = await GetServiceAccountUserIdAsync(createdClientId);
+                var result = await _keycloakClient.AddRealmRoleMappingsToUserAsync(_realm, serviceAccountUserId, [clientRole]);
+                return result;
             }
             else
             {
-                throw new Exception($"Error while creating the client: {clientId}");
-            }
-            return false;
-
-            List<ClientProtocolMapper> ConfigServiceProtocolMapper()
-            {
-                return
-                [
-                    new ClientProtocolMapper
-                    {
-                        Name = "Configuration service role mapper",
-                        Protocol = "openid-connect",
-                        ProtocolMapper = "oidc-usermodel-realm-role-mapper",
-                        Config = new Dictionary<string, string>
-                        {
-                            { "claim.name", keycloakContext.RoleClaimType },
-                            { "jsonType.label", "String" },
-                            { "user.attribute", "roles" },
-                            { "multivalued", "true" },
-                            { "id.token.claim", "true" },
-                            { "access.token.claim", "true" },
-                            { "userinfo.token.claim", "true" }
-                        }
-                    }
-                ];
+                throw new Exception($"Role {keycloakContext.ServiceRole} not found.");
             }
         }
-        catch (Exception ex)
+        else
         {
-            throw new Exception(ex.Message);
+            throw new Exception($"Error while creating the client: {clientId}");
+        }
+
+        List<ClientProtocolMapper> ConfigServiceProtocolMapper()
+        {
+            return
+            [
+                new ClientProtocolMapper
+                {
+                    Name = "Configuration service role mapper",
+                    Protocol = "openid-connect",
+                    ProtocolMapper = "oidc-usermodel-realm-role-mapper",
+                    Config = new Dictionary<string, string>
+                    {
+                        { "claim.name", keycloakContext.RoleClaimType },
+                        { "jsonType.label", "String" },
+                        { "user.attribute", "roles" },
+                        { "multivalued", "true" },
+                        { "id.token.claim", "true" },
+                        { "access.token.claim", "true" },
+                        { "userinfo.token.claim", "true" }
+                    }
+                }
+            ];
         }
     }
 

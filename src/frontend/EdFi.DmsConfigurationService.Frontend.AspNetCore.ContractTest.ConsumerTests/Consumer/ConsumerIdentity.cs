@@ -4,22 +4,7 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
-using FakeItEasy;
-using FluentAssertions;
-using FluentValidation;
-using FluentValidation.Results;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using NUnit.Framework;
-using PactNet;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.Testing;
-using PactNet.Infrastructure.Outputters;
-using System.Collections.Generic;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Moq;
@@ -27,25 +12,23 @@ using EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 using EdFi.DmsConfigurationService.Backend;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Configuration;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
-using System.Net.Http.Json;
+using FakeItEasy;
+using FluentAssertions;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using NUnit.Framework;
-using Microsoft.Extensions.Logging.Console;
+using PactNet;
+using PactNet.Infrastructure.Outputters;
+using Microsoft.Extensions.Logging;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest;
 
 public class ConsumerIdentityTest
 {
-    private readonly IPactBuilderV4 pact;
-    //private RequestDelegate _next;
-    //private ILogger<RequestLoggingMiddleware> _logger;
-
-    private Mock<IHttpClientFactory> _mockFactory;
-
+    private IPactBuilderV4? pact;
     private ITokenManager? _tokenManager;
 
-    /* [SetUp]
+    [SetUp]
     public void Setup()
     {
         _tokenManager = A.Fake<ITokenManager>();
@@ -67,11 +50,11 @@ public class ConsumerIdentityTest
         var config = new PactConfig
         {
             PactDir = "../../../pacts/",
-            Outputters = new List<IOutput> { new ConsoleOutput() },
-            /* Outputters = new List<IOutput>
+            Outputters = new List<IOutput>
             {
-                new NUnitOutput()
-            }, */
+                new ConsoleOutput(),
+                new FileOutput("../../../logs/pact-log.txt")  // Logs de Pact
+            },
             DefaultJsonSettings = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -85,57 +68,53 @@ public class ConsumerIdentityTest
         //this.pact = pact.WithHttpInteractions();
 
         _tokenManager = A.Fake<ITokenManager>();
-        var token =
-            """
+        var token = """
             {
                 "access_token":"input123token",
                 "expires_in":900,
                 "token_type":"bearer"
             }
             """;
-        A.CallTo(() => _tokenManager.GetAccessTokenAsync(A<IEnumerable<KeyValuePair<string, string>>>.Ignored)).Returns(Task.FromResult(token));
+        A.CallTo(
+                () => _tokenManager.GetAccessTokenAsync(A<IEnumerable<KeyValuePair<string, string>>>.Ignored)
+            )
+            .Returns(Task.FromResult(token));
     }
 
     [Test]
     public async Task VerifyWithValidCredentials()
     {
-        this.pact
-                .UponReceiving("given a valid credentials")
-                    .WithRequest(HttpMethod.Post, "/connect/token")
-                    //.WithHeader("Content-Type", "application/json;")
-                    .WithJsonBody(new
-                    {
-                        //client_id = "CSClient1",
-                        //client_secret = "test123@Puiu"
-                        clientid = "CSClient1",
-                        clientsecret = "test123@Puiu"
-                        //granttype = "password",
-                        //username = "123",
-                        //password = "12345"
-                    })
-                .WillRespond()
-                    //.WithHeader("Content-Type", "application/json;")
-                    .WithStatus(HttpStatusCode.OK);
+        // Sin uso de Pact.Matchers
+        pact?.UponReceiving("given a valid credentials")
+            .WithRequest(HttpMethod.Post, "/connect/token")
+            .WithHeader("Content-Type", "application/json") // Asegurarse de que el encabezado coincida
+            .WithJsonBody(new { clientid = "CSClient1", clientsecret = "test123@Puiu" })
+            .WillRespond()
+            .WithStatus(HttpStatusCode.OK)
+            .WithJsonBody(new // Cuerpo de la respuesta
+            {
+                access_token = "input123token",
+                expires_in = 900,
+                token_type = "bearer"
+            });
 
-        await this.pact.VerifyAsync(async ctx =>
+        await pact!.VerifyAsync(async ctx =>
         {
-            /*_mockFactory = new Mock<IHttpClientFactory>()*/
-            var mockServerUri = ctx.MockServerUri;
-
-            var mockHttpClient = new HttpClient
+            await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
-                BaseAddress = new Uri(mockServerUri.ToString()) // Set the mock server's base address
-            };
-
-            //_mockFactory.Setup(factory => factory.CreateClient(It.IsAny<string>())).Returns(mockHttpClient);
-
-            var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            {
+                builder.UseEnvironment("Test");
                 builder.ConfigureServices(services =>
                 {
                     services.AddSingleton<IHttpClientFactory>(_mockFactory.Object);
                     services.AddTransient((x) => new TokenRequest.Validator());
                     services.AddTransient((x) => _tokenManager!);
+                });
+
+                builder.ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                    logging.SetMinimumLevel(LogLevel.Trace);
                 });
             });
 
@@ -143,13 +122,23 @@ public class ConsumerIdentityTest
             client.BaseAddress = ctx.MockServerUri;
 
             // Act
-            var requestContent = new { clientid = "CSClient1", clientsecret = "test123@Puiu" }; // Verification mismatches
-            //var requestContent = new { clientid = "CSClient1", clientsecret = "test123@Puiu", granttype = "password" }; // Verification mismatches
-            //var requestContent = new { clientid = "CSClient1", clientsecret = "test123@Puiu", grant_type = "password" };
-            //var requestContent = new { client_id = "CSClient1", client_secret = "test123@Puiu", grant_type = "password" }; //BAD REQUEST
-            //var requestContent = new { client_id = "CSClient1", client_secret = "test123@Puiu", grant_type = "password", username = "123", password = "12345" }; ////BAD REQUEST
-            var response = await client.PostAsJsonAsync("/connect/token", requestContent);
+            var requestContent = new { clientid = "CSClient1", clientsecret = "test123@Puiu" };
+            var request = new HttpRequestMessage(HttpMethod.Post, "/connect/token")
+            {
+                Content = JsonContent.Create(requestContent)
+            };
+            request.Content.Headers.Clear();
+            request.Content.Headers.Add("Content-Type", "application/json");
+
+            Console.WriteLine("Request JSON:");
+            Console.WriteLine(await request.Content.ReadAsStringAsync());
+
+            // Enviar la solicitud
+            var response = await client.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine("Response Status: " + response.StatusCode);
+            Console.WriteLine("Response Body: " + content);
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -157,5 +146,25 @@ public class ConsumerIdentityTest
             //content.Should().Contain("input123token");
             //content.Should().Contain("bearer");
         });
+    }
+}
+
+public class FileOutput : IOutput
+{
+    private readonly string _filePath;
+
+    public FileOutput(string filePath)
+    {
+        _filePath = filePath;
+    }
+
+    public void Write(string message)
+    {
+        File.AppendAllText(_filePath, message);
+    }
+
+    public void WriteLine(string message)
+    {
+        File.AppendAllText(_filePath, message + "\n");
     }
 }
