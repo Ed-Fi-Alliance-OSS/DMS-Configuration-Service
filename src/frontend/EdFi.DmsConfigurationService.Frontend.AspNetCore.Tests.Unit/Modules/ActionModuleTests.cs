@@ -17,34 +17,56 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Tests.Unit.Modules;
 [TestFixture]
 public class RegisterActionEndpointTests
 {
-
-    [SetUp]
-    public void Setup() { }
-
-    [Test]
-    public async Task Given_valid_path_and_parameters()
+    [TestFixture]
+    public class Given_A_valid_action_request
     {
-        // Arrange
-        await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        private AdminAction[] _mockActionResponse;
+        private HttpResponseMessage? _response;
+        private AdminAction[]? _content;
+
+        [SetUp]
+        public async Task Setup()
         {
-            builder.UseEnvironment("Test");
-        });
-        using var client = factory.CreateClient();
+            // Arrange
+            await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("Test");
+            });
+            var client = factory.CreateClient();
 
-        var testActionResponse = new AdminAction[] {
-            new AdminAction {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/odsapi/actions/create"},
-            new AdminAction {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/odsapi/actions/read"},
-            new AdminAction {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/odsapi/actions/update"},
-            new AdminAction {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/odsapi/actions/delete"}
-        };
-        // Act
-        var response = await client.GetAsync("/v2/actions");
-        var content = await response.Content.ReadAsStringAsync();
-        var deserializedResponse = JsonSerializer.Deserialize<AdminAction[]>(content);
+            _mockActionResponse = [
+                new AdminAction {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/api/actions/create"},
+                new AdminAction {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/api/actions/read"},
+                new AdminAction {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/api/actions/update"},
+                new AdminAction {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/api/actions/delete"}
+            ];
 
-        // Assert
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        deserializedResponse.Should().BeEquivalentTo(testActionResponse);
+            // Act
+            _response = await client.GetAsync("/v2/actions");
+            var responseString = await _response.Content.ReadAsStringAsync();
+            _content = JsonSerializer.Deserialize<AdminAction[]>(responseString);
+        }
+
+        [Test]
+        public void When_response_is_provide()
+        {
+            // Assert
+            _response!.StatusCode.Should().Be(HttpStatusCode.OK);
+        }
+
+        [Test]
+        public void When_response_payload_is_provided()
+        {
+            // Assert
+            _content.Should().BeEquivalentTo(_mockActionResponse);
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            _response!.Dispose();
+        }
     }
+
 };
 
