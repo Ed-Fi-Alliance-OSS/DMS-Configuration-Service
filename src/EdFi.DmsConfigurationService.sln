@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -13,6 +13,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdFi.DmsConfigurationService.Backend", "backend\EdFi.DmsConfigurationService.Backend\EdFi.DmsConfigurationService.Backend.csproj", "{534CEEAD-7C32-41F5-B2A2-BFB650D0463B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EdFi.DmsConfigurationService.Backend.Keycloak", "backend\EdFi.DmsConfigurationService.Backend.Keycloak\EdFi.DmsConfigurationService.Backend.Keycloak.csproj", "{40174F36-F992-4C1D-AA40-E59442637CF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ConsumerTests", "frontend\EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ConsumerTests\EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ConsumerTests.csproj", "{E62141BF-4663-43D7-B92F-5D7B9C0E6BBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ProviderTests", "frontend\EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ProviderTests\EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.ProviderTests.csproj", "{F8A6E2C3-9777-4064-9BB4-2D223BC5C2B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +40,14 @@ Global
 		{40174F36-F992-4C1D-AA40-E59442637CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40174F36-F992-4C1D-AA40-E59442637CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40174F36-F992-4C1D-AA40-E59442637CF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E62141BF-4663-43D7-B92F-5D7B9C0E6BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E62141BF-4663-43D7-B92F-5D7B9C0E6BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E62141BF-4663-43D7-B92F-5D7B9C0E6BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E62141BF-4663-43D7-B92F-5D7B9C0E6BBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8A6E2C3-9777-4064-9BB4-2D223BC5C2B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8A6E2C3-9777-4064-9BB4-2D223BC5C2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8A6E2C3-9777-4064-9BB4-2D223BC5C2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8A6E2C3-9777-4064-9BB4-2D223BC5C2B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +57,8 @@ Global
 		{A1BEAD7A-70BD-46A9-8660-9ED779C55329} = {68E345E9-E50F-482A-8AFF-9E1156C448C9}
 		{534CEEAD-7C32-41F5-B2A2-BFB650D0463B} = {82B01A63-4B8A-4965-9806-001128050FB5}
 		{40174F36-F992-4C1D-AA40-E59442637CF8} = {82B01A63-4B8A-4965-9806-001128050FB5}
+		{E62141BF-4663-43D7-B92F-5D7B9C0E6BBB} = {68E345E9-E50F-482A-8AFF-9E1156C448C9}
+		{F8A6E2C3-9777-4064-9BB4-2D223BC5C2B2} = {68E345E9-E50F-482A-8AFF-9E1156C448C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BB22426B-6AA8-4C58-9557-376F107B547B}
