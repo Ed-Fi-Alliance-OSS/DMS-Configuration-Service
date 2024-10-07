@@ -56,7 +56,9 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                 LogLevel = PactLogLevel.Debug,
             };
 
-            IPactVerifier pactVerifier = new PactVerifier(config);
+            //IPactVerifier pactVerifier = new PactVerifier(config);
+
+
             //string pactUrl = System.Environment.GetEnvironmentVariable("PACT_URL");
             string pactUrl = "http://localhost:5000";
 
