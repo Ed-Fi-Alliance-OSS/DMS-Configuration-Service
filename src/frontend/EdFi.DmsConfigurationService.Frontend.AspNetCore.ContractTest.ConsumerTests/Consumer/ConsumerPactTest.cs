@@ -4,25 +4,13 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
-using FakeItEasy;
-using FluentAssertions;
-using FluentValidation;
-using FluentValidation.Results;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using NUnit.Framework;
-using PactNet;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.Testing;
-using PactNet.Infrastructure.Outputters;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
+using FluentAssertions;
 using Moq;
-using EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
+using PactNet;
+using PactNet.Infrastructure.Outputters;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest;
 
@@ -43,9 +31,11 @@ public class ConsumerPactTest
         {
             PactDir = "../../../pacts/",
             Outputters = new List<IOutput> { new ConsoleOutput() },
-            DefaultJsonSettings = new JsonSerializerSettings
+            DefaultJsonSettings = new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
             },
             LogLevel = PactLogLevel.Debug
         };

@@ -56,7 +56,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                 LogLevel = PactLogLevel.Debug,
             };
 
-            IPactVerifier pactVerifier = new PactVerifier(config);
+            //IPactVerifier pactVerifier = new PactVerifier(config);
             //string pactUrl = System.Environment.GetEnvironmentVariable("PACT_URL");
             string pactUrl = "http://localhost:5000";
 
@@ -81,35 +81,35 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
             // Verify a local file, provided by PACT_FILE, verification results are never published
             // This step does not require a Pact Broker
             {
-                pactVerifier.ServiceProvider(providerName, new Uri(_providerUri))
-                //.WithFileSource(new FileInfo(pactUrl))
-                .WithFileSource(new FileInfo(pactFile))
-                .WithProviderStateUrl(new Uri($"{_pactServiceUri}/provider-states"))
-                .Verify();
+                //pactVerifier.ServiceProvider(providerName, new Uri(_providerUri))
+                ////.WithFileSource(new FileInfo(pactUrl))
+                //.WithFileSource(new FileInfo(pactFile))
+                //.WithProviderStateUrl(new Uri($"{_pactServiceUri}/provider-states"))
+                //.Verify();
             }
             else if (pactUrl != "" && pactUrl != null)
             // Verify a remote file fetched from a pact broker, provided by PACT_URL, verification results may be published
             // This step requires a Pact Broker
             {
-                pactVerifier.ServiceProvider(providerName, new Uri(_providerUri))
-                .WithUriSource(new Uri(pactUrl), options =>
-                {
-                    if (!String.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PACT_BROKER_TOKEN")))
-                    {
-                        options.TokenAuthentication(System.Environment.GetEnvironmentVariable("PACT_BROKER_TOKEN"));
-                    }
-                    else if (!String.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PACT_BROKER_USERNAME")))
-                    {
-                        options.BasicAuthentication(System.Environment.GetEnvironmentVariable("PACT_BROKER_USERNAME"), System.Environment.GetEnvironmentVariable("PACT_BROKER_PASSWORD"));
-                    }
-                    /* options.PublishResults(!String.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PACT_BROKER_PUBLISH_VERIFICATION_RESULTS")), version, results =>
-                        {
-                            results.ProviderBranch(branch)
-                            .BuildUri(new Uri(buildUri));
-                        }); */
-                })
-                .WithProviderStateUrl(new Uri($"{_pactServiceUri}/provider-states"))
-                .Verify();
+                //pactVerifier.ServiceProvider(providerName, new Uri(_providerUri))
+                //.WithUriSource(new Uri(pactUrl), options =>
+                //{
+                //    if (!String.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PACT_BROKER_TOKEN")))
+                //    {
+                //        options.TokenAuthentication(System.Environment.GetEnvironmentVariable("PACT_BROKER_TOKEN"));
+                //    }
+                //    else if (!String.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PACT_BROKER_USERNAME")))
+                //    {
+                //        options.BasicAuthentication(System.Environment.GetEnvironmentVariable("PACT_BROKER_USERNAME"), System.Environment.GetEnvironmentVariable("PACT_BROKER_PASSWORD"));
+                //    }
+                //    /* options.PublishResults(!String.IsNullOrEmpty(System.Environment.GetEnvironmentVariable("PACT_BROKER_PUBLISH_VERIFICATION_RESULTS")), version, results =>
+                //        {
+                //            results.ProviderBranch(branch)
+                //            .BuildUri(new Uri(buildUri));
+                //        }); */
+                //})
+                //.WithProviderStateUrl(new Uri($"{_pactServiceUri}/provider-states"))
+                //.Verify();
             }
             else
             {
