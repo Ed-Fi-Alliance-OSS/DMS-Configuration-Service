@@ -5,22 +5,63 @@
   "interactions": [
     {
       "description": "A request for a non-existing resource",
+      "pending": false,
       "request": {
         "method": "GET",
         "path": "/users/123"
       },
       "response": {
         "status": 404
-      }
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "given a valid credentials",
+      "pending": false,
+      "request": {
+        "body": {
+          "content": {
+            "clientid": "CSClient1",
+            "clientsecret": "test123@Puiu"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "method": "POST",
+        "path": "/connect/token-test"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "access_token": "input123token",
+            "expires_in": 900,
+            "token_type": "bearer"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
     }
   ],
   "metadata": {
     "pactRust": {
-      "ffi": "0.4.0",
-      "models": "1.0.4"
+      "ffi": "0.4.23",
+      "models": "1.2.5"
     },
     "pactSpecification": {
-      "version": "3.0.0"
+      "version": "4.0"
     }
   },
   "provider": {

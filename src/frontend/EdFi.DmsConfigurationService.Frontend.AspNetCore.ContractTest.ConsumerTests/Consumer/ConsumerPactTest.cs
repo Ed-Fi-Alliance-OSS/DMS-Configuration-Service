@@ -43,9 +43,9 @@ public class ConsumerPactTest
         {
             PactDir = "../../../pacts/",
             Outputters = new List<IOutput> { new ConsoleOutput() },
-            DefaultJsonSettings = new JsonSerializerSettings
+            DefaultJsonSettings = new JsonSerializerOptions
             {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                PropertyNameCaseInsensitive = true,
             },
             LogLevel = PactLogLevel.Debug
         };
