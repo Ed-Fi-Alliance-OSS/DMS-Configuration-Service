@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
@@ -23,7 +25,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddSingleton<IOrderRepository, FakeOrderRepository>();
-
+            //services.AddSingleton<>(IEndpointModule, );
             this.inner.ConfigureServices(services);
         }
 

@@ -7,16 +7,17 @@ using System.Net;
 using PactNet;
 using EdFi.DmsConfigurationService.Backend;
 using System.Net.Http.Json;
+using FluentAssertions;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest;
 
 public class ConsumerIdentityWorkingTest
 {
-    private readonly IPactBuilderV4 pact;
+    private readonly IPactBuilderV3 pact;
 
     public ConsumerIdentityWorkingTest()
     {
-        pact = Pact.V4("DMS API Consumer", "DMS Configuration Service API").WithHttpInteractions();
+        pact = Pact.V3("DMS API Consumer", "DMS Configuration Service API").WithHttpInteractions();
     }
 
     [Test]
@@ -47,7 +48,11 @@ public class ConsumerIdentityWorkingTest
             // Act
             var requestBody = new { clientid = "CSClient1", clientsecret = "test123@Puiu" };
             var response = await client.PostAsJsonAsync($"{ctx.MockServerUri}connect/token-test", requestBody);
-
+            var content = await response.Content.ReadAsStringAsync();
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Should().NotBeNull();
+            content.Should().Contain("input123token");
+            content.Should().Contain("bearer");
         });
     }
 }
