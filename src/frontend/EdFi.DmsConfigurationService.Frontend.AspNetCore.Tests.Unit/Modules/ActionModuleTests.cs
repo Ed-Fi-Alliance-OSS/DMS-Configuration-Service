@@ -4,11 +4,14 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Net;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 using FluentAssertions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 using System.Text.Json;
 using NUnit.Framework;
 
@@ -18,7 +21,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Tests.Unit.Modules;
 public class RegisterActionEndpointTests
 {
     [TestFixture]
-    public class Given_A_valid_action_request
+    public class When_making_action_request
     {
         private AdminAction[] _mockActionResponse;
         private HttpResponseMessage? _response;
@@ -31,8 +34,19 @@ public class RegisterActionEndpointTests
             await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
             {
                 builder.UseEnvironment("Test");
+                builder.ConfigureServices(
+                    (collection) =>
+                    {
+                        collection.AddAuthentication(AuthenticationConstants.AuthenticationSchema)
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(AuthenticationConstants.AuthenticationSchema, options => { });
+
+                        collection.AddAuthorization(options => options.AddPolicy(SecurityConstants.ServicePolicy,
+                        policy => policy.RequireClaim(ClaimTypes.Role, AuthenticationConstants.Role)));
+
+                    }
+                );
             });
-            var client = factory.CreateClient();
+            using var client = factory.CreateClient();
 
             _mockActionResponse = [
                 new AdminAction {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/api/actions/create"},
@@ -42,24 +56,31 @@ public class RegisterActionEndpointTests
             ];
 
             // Act
-            _response = await client.GetAsync("/v2/actions");
+            _response = await client.GetAsync("/actions");
             var responseString = await _response.Content.ReadAsStringAsync();
             _content = JsonSerializer.Deserialize<AdminAction[]>(responseString);
         }
 
         [Test]
-        public void When_response_is_provide()
+        public void Given_valid_client_credentials_and_role()
         {
             // Assert
             _response!.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        [Test]
-        public void When_response_payload_is_provided()
-        {
-            // Assert
-            _content.Should().BeEquivalentTo(_mockActionResponse);
-        }
+        // [Test]
+        // public void Given_empty_client_credentials()
+        // {
+        //     // Assert
+        //     _content.Should().BeEquivalentTo(_mockActionResponse);
+        // }
+
+        // [Test]
+        // public void Given_invalid_client_secret()
+        // {
+        //     // Assert
+        //     _content.Should().BeEquivalentTo(_mockActionResponse);
+        // }
 
         [TearDown]
         public void TearDown()

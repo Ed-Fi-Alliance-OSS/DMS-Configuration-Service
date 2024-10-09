@@ -12,7 +12,7 @@ public class ActionsModule : IEndpointModule
 {
     public void MapEndpoints(IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/v2/actions", GetUserActions);
+        endpoints.MapGet("/actions", GetUserActions).RequireAuthorizationWithPolicy();
     }
 
     public IResult GetUserActions(HttpContext httpContext)
