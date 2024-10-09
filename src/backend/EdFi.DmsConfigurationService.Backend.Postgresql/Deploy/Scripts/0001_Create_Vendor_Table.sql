@@ -13,6 +13,6 @@ CREATE TABLE config.Vendor (
 
 COMMENT ON COLUMN config.Vendor.Id IS 'Vendor or company id';
 COMMENT ON COLUMN config.Vendor.Company IS 'Vendor or company name';
-COMMENT ON COLUMN config.Vendor.NamespacePrefixes IS 'Namespace prefix for the vendor. Multiple namespace prefixes can be provided as comma separated list if required';
+COMMENT ON COLUMN config.Vendor.NamespacePrefixes IS 'A JSONB array of namespace prefixes associated with the vendor';
 COMMENT ON COLUMN config.Vendor.ContactName IS 'Vendor contact name';
 COMMENT ON COLUMN config.Vendor.ContactEmailAddress IS 'Vendor contact email id';

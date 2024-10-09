@@ -16,4 +16,4 @@ COMMENT ON COLUMN config.Application.Id IS 'Application id';
 COMMENT ON COLUMN config.Application.ApplicationName IS 'Application name';
 COMMENT ON COLUMN config.Application.VendorId IS 'Vendor or company id';
 COMMENT ON COLUMN config.Application.ClaimSetName IS 'Claim set name';
-COMMENT ON COLUMN config.Application.EducationOrganizations IS 'Education organization ids';
+COMMENT ON COLUMN config.Application.EducationOrganizations IS 'A JSONB array of Education organization ids';
