@@ -14,8 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Testing;
 using PactNet;
 using PactNet.Verifier;
+using FakeItEasy;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 using EdFi.DmsConfigurationService.Backend;
+using Microsoft.AspNetCore.Builder;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
@@ -23,7 +25,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
     public class ProviderTests : IDisposable
     {
         private static readonly Uri _providerUri = new("http://localhost:5000");
-        //private IClientRepository? _clientRepository;
+        private IClientRepository? _clientRepository;
 
         private static readonly JsonSerializerOptions _options = new()
         {
@@ -36,25 +38,18 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
 
         public ProviderTests()
         {
-/*             this.server = Host.CreateDefaultBuilder()
-                              .ConfigureWebHostDefaults(webBuilder =>
-                              {
-                                  webBuilder.UseUrls(_providerUri.ToString());
-                                  webBuilder.ConfigureServices((collection) =>
-                                  {
-                                      collection.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
-                                      collection.AddTransient((x) => _clientRepository!);
-                                  });
-                              }).Build();
-            this.server.Start(); */
+            _clientRepository = A.Fake<IClientRepository>();
+            A.CallTo(() => _clientRepository.CreateClientAsync(A<string>.Ignored, A<string>.Ignored, A<string>.Ignored)).Returns(Task.FromResult(true));
+            var clientList = A.Fake<IEnumerable<string>>();
+            A.CallTo(() => _clientRepository.GetAllClientsAsync()).Returns(Task.FromResult(clientList));
 
             this.server = Host.CreateDefaultBuilder()
-                              .ConfigureWebHostDefaults(webBuilder =>
-                              {
-                                  webBuilder.UseUrls(_providerUri.ToString());
-                                  webBuilder.UseStartup<TestStartup>();
-                              })
-                              .Build();
+                             .ConfigureWebHostDefaults(webBuilder =>
+                             {
+                                 webBuilder.UseUrls(_providerUri.ToString());
+                                 webBuilder.UseStartup<TestStartup>();
+                             })
+                             .Build();
 
             this.server.Start();
 

@@ -13,6 +13,8 @@ using EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
 using EdFi.DmsConfigurationService.Backend;
 using EdFi.DmsConfigurationService.Backend.Keycloak;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
+using FakeItEasy;
+using Microsoft.Extensions.Hosting;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
@@ -25,14 +27,33 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
             this.inner = new Startup(configuration);
         }
 
+/*         public void ConfigureServices(IHost server, Uri _providerUri, IClientRepository _clientRepository)
+        {
+            server = Host.CreateDefaultBuilder()
+                             .ConfigureWebHostDefaults(webBuilder =>
+                             {
+                                 webBuilder.UseUrls(_providerUri.ToString());
+                                 webBuilder.ConfigureServices((collection) =>
+                                 {
+                                     collection.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
+                                     collection.AddTransient((x) => _clientRepository!);
+                                 });
+                             }).Build();
+
+        }*/
+
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddSingleton<IOrderRepository, FakeOrderRepository>();
-            //services.AddSingleton<>(IClientRepository, ClientRepository);
-            this.inner.ConfigureServices(services);
+            IClientRepository? _clientRepository = A.Fake<IClientRepository>();
+            // Register the Validator and the _clientRepository in the DI container.
+            services.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
+            services.AddTransient((x) => _clientRepository!);
 
-            //webApplicationBuilder.Services.AddTransient<IClientRepository, ClientRepository>();
-            //webApplicationBuilder.Services.AddTransient<ITokenManager, TokenManager>();
+            // Register other services (e.g., a fake repository or other dependencies).
+            //services.AddSingleton<IClientRepository, FakeClientRepository>();
+
+            // Call inner configuration if needed.
+            this.inner.ConfigureServices(services);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
