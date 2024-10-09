@@ -10,8 +10,12 @@ using System.Text.Json;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc.Testing;
 using PactNet;
 using PactNet.Verifier;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
+using EdFi.DmsConfigurationService.Backend;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
@@ -19,6 +23,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
     public class ProviderTests : IDisposable
     {
         private static readonly Uri _providerUri = new("http://localhost:5000");
+        private IClientRepository? _clientRepository;
 
         private static readonly JsonSerializerOptions _options = new()
         {
@@ -31,6 +36,18 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
 
         public ProviderTests()
         {
+/*             this.server = Host.CreateDefaultBuilder()
+                              .ConfigureWebHostDefaults(webBuilder =>
+                              {
+                                  webBuilder.UseUrls(_providerUri.ToString());
+                                  webBuilder.ConfigureServices((collection) =>
+                                  {
+                                      collection.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
+                                      collection.AddTransient((x) => _clientRepository!);
+                                  });
+                              }).Build();
+            this.server.Start(); */
+
             this.server = Host.CreateDefaultBuilder()
                               .ConfigureWebHostDefaults(webBuilder =>
                               {
@@ -40,6 +57,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                               .Build();
 
             this.server.Start();
+
 
             this.verifier = new PactVerifier("DMS API");
         }

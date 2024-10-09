@@ -10,6 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Middleware;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Modules;
+using EdFi.DmsConfigurationService.Backend;
+using EdFi.DmsConfigurationService.Backend.Keycloak;
+using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
@@ -25,8 +28,14 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddSingleton<IOrderRepository, FakeOrderRepository>();
-            //services.AddSingleton<>(IEndpointModule, );
-            this.inner.ConfigureServices(services);
+            //services.AddSingleton<>(IClientRepository, ClientRepository);
+            //this.inner.ConfigureServices(services);
+
+            //webApplicationBuilder.Services.AddTransient<IClientRepository, ClientRepository>();
+            //webApplicationBuilder.Services.AddTransient<ITokenManager, TokenManager>();
+            var builder = WebApplication.CreateBuilder();
+            builder.AddServices();
+            var app = builder.Build();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
