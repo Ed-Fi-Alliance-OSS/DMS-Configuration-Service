@@ -23,7 +23,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
     public class ProviderTests : IDisposable
     {
         private static readonly Uri _providerUri = new("http://localhost:5000");
-        private IClientRepository? _clientRepository;
+        //private IClientRepository? _clientRepository;
 
         private static readonly JsonSerializerOptions _options = new()
         {

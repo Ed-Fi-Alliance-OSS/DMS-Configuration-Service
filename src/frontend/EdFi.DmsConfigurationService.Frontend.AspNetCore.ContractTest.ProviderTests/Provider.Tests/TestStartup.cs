@@ -29,13 +29,10 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
         {
             //services.AddSingleton<IOrderRepository, FakeOrderRepository>();
             //services.AddSingleton<>(IClientRepository, ClientRepository);
-            //this.inner.ConfigureServices(services);
+            this.inner.ConfigureServices(services);
 
             //webApplicationBuilder.Services.AddTransient<IClientRepository, ClientRepository>();
             //webApplicationBuilder.Services.AddTransient<ITokenManager, TokenManager>();
-            var builder = WebApplication.CreateBuilder();
-            builder.AddServices();
-            var app = builder.Build();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
