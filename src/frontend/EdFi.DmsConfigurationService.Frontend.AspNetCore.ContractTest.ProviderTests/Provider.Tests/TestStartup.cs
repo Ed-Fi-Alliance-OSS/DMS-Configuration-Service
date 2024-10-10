@@ -15,52 +15,70 @@ using EdFi.DmsConfigurationService.Backend.Keycloak;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 using FakeItEasy;
 using Microsoft.Extensions.Hosting;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
     public class TestStartup
     {
-        private readonly Startup inner;
+        //private IClientRepository? _clientRepository;
+        public IConfiguration? Configuration { get; }
 
         public TestStartup(IConfiguration configuration)
         {
-            this.inner = new Startup(configuration);
+            this.Configuration = configuration;
         }
 
-/*         public void ConfigureServices(IHost server, Uri _providerUri, IClientRepository _clientRepository)
+        /* public TestStartup(IConfiguration configuration, IClientRepository clientRepository)
         {
-            server = Host.CreateDefaultBuilder()
-                             .ConfigureWebHostDefaults(webBuilder =>
-                             {
-                                 webBuilder.UseUrls(_providerUri.ToString());
-                                 webBuilder.ConfigureServices((collection) =>
-                                 {
-                                     collection.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
-                                     collection.AddTransient((x) => _clientRepository!);
-                                 });
-                             }).Build();
-
-        }*/
+            Configuration = configuration;
+            _clientRepository = clientRepository;
+        } */
 
         public void ConfigureServices(IServiceCollection services)
         {
-            IClientRepository? _clientRepository = A.Fake<IClientRepository>();
-            // Register the Validator and the _clientRepository in the DI container.
-            services.AddTransient((x) => new RegisterRequest.Validator(_clientRepository!));
-            services.AddTransient((x) => _clientRepository!);
+            var assembly = typeof(IdentityModule).Assembly;
 
-            // Register other services (e.g., a fake repository or other dependencies).
-            //services.AddSingleton<IClientRepository, FakeClientRepository>();
+            services.AddRouting(options => options.LowercaseUrls = true);
 
-            // Call inner configuration if needed.
-            this.inner.ConfigureServices(services);
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                })
+                .PartManager.ApplicationParts.Add(new AssemblyPart(assembly));
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Provider", Version = "v1" });
+            });
+
+            services.TryAddSingleton<ITokenManager, FakeTokenManager>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseMiddleware<RequestLoggingMiddleware>();
+            app.UseMiddleware<ProviderStateMiddleware>();
 
-            this.inner.Configure(app, env);
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Provider v1"));
+            }
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

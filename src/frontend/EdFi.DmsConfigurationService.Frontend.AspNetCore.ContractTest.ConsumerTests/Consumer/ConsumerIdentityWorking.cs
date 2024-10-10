@@ -24,7 +24,7 @@ public class ConsumerIdentityWorkingTest
     public async Task VerifyWithValidCredentials()
     {
         pact.UponReceiving("given a valid credentials")
-            .WithRequest(HttpMethod.Post, "/connect/token-test")
+            .WithRequest(HttpMethod.Post, "/connect/token")
             .WithJsonBody(new
             {
                 clientid = "CSClient1",
@@ -47,7 +47,7 @@ public class ConsumerIdentityWorkingTest
 
             // Act
             var requestBody = new { clientid = "CSClient1", clientsecret = "test123@Puiu" };
-            var response = await client.PostAsJsonAsync($"{ctx.MockServerUri}connect/token-test", requestBody);
+            var response = await client.PostAsJsonAsync($"{ctx.MockServerUri}connect/token", requestBody);
             var content = await response.Content.ReadAsStringAsync();
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             content.Should().NotBeNull();

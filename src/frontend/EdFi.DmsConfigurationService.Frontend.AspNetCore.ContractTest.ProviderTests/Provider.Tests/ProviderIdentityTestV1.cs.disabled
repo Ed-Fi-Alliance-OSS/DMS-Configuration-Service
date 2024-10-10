@@ -3,7 +3,6 @@
 // The Ed-Fi Alliance licenses this file to you under the Apache License, Version 2.0.
 // See the LICENSE and NOTICES files in the project root for more information.
 
-using System.Threading;
 using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -17,10 +16,10 @@ using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider.Tests
 {
     [TestFixture]
-    public class ProviderTests : IDisposable
+    public class ProviderTestsV1 : IDisposable
     {
         private static readonly Uri _providerUri = new("http://localhost:5000");
-        private ITokenManager? _tokenManager;
+        //private ITokenManager? _tokenManager;
 
         private static readonly JsonSerializerOptions _options = new()
         {
@@ -31,10 +30,10 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
         private IHost server;
         private IPactVerifier verifier;
 
-        public ProviderTests()
+        public ProviderTestsV1()
         {
-            //Probably this is not needed since class FakeTokenManager was created and it is being called on TestStartup
-            _tokenManager = A.Fake<ITokenManager>();
+            //Probably this is not needed since class FakeTokenManager was created and called on TestStartup
+            /* _tokenManager = A.Fake<ITokenManager>();
             var token =
                 """
             {
@@ -43,18 +42,9 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                 "token_type":"bearer"
             }
             """;
-            A.CallTo(() => _tokenManager.GetAccessTokenAsync(A<IEnumerable<KeyValuePair<string, string>>>.Ignored)).Returns(Task.FromResult(token));
+            A.CallTo(() => _tokenManager.GetAccessTokenAsync(A<IEnumerable<KeyValuePair<string, string>>>.Ignored)).Returns(Task.FromResult(token)); */
 
             this.server = Host.CreateDefaultBuilder()
-                        .ConfigureServices((collection) =>
-                                {
-                                    collection.Configure<IdentitySettings>(opts =>
-                                    {
-                                        opts.AllowRegistration = false;
-                                    });
-                                    collection.AddTransient((x) => new TokenRequest.Validator());
-                                    collection.AddTransient((x) => _tokenManager!);
-                                })
                              .ConfigureWebHostDefaults(webBuilder =>
                              {
                                  webBuilder.UseEnvironment("Development");
@@ -64,9 +54,6 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                              }).Build();
 
             this.server.Start();
-            //This was used to make some time and verify the swagger during the test execution
-            //for some reason it was not working when debugging
-            //Thread.Sleep(180000);
             this.verifier = new PactVerifier(new PactVerifierConfig()
             {
                 LogLevel = PactNet.PactLogLevel.Debug

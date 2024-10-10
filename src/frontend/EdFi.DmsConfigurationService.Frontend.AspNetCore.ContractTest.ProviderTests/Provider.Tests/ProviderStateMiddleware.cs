@@ -32,7 +32,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
 
             this.providerStates = new Dictionary<string, Action<IDictionary<string, string>>>
             {
-                {
+/*                 {
                     "there are events with ids '45D80D13-D5A2-48D7-8353-CBB4C0EAABF5', '83F9262F-28F1-4703-AB1A-8CFD9E8249C9' and '3E83A96B-2A0C-49B1-9959-26DF23F83AEB'",
                     this.InsertEventsIntoDatabase
                 },
@@ -43,7 +43,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                 {
                     "there is one event with type 'DetailsView'",
                     this.EnsureOneDetailsViewEventExists
-                }
+                } */
             };
         }
 
