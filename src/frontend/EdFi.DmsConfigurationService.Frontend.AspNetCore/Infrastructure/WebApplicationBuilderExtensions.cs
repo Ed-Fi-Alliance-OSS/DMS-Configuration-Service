@@ -40,9 +40,11 @@ public static class WebApplicationBuilderExtensions
         // Read Database configuration from appSettings
         webApplicationBuilder
             .Services.Configure<AppSettings>(webApplicationBuilder.Configuration.GetSection("AppSettings"))
+            .AddSingleton<IValidateOptions<AppSettings>, AppSettingsValidator>()
             .Configure<ConnectionStrings>(
-                webApplicationBuilder.Configuration.GetSection("ConnectionStrings")
-            );
+                webApplicationBuilder.Configuration.GetSection("ConnectionStrings"))
+            .AddSingleton<IValidateOptions<ConnectionStrings>, ConnectionStringsValidator>();
+        ;
         ConfigureDatastore(webApplicationBuilder);
 
         // For Security(Keycloak)
