@@ -85,6 +85,7 @@ $solutionRoot = "$PSScriptRoot/src"
 $defaultSolution = "$solutionRoot/EdFi.DmsConfigurationService.sln"
 $applicationRoot = "$solutionRoot/frontend"
 $projectName = "EdFi.DmsConfigurationService.Frontend.AspNetCore"
+$installerProjectName = "EdFi.DmsConfigurationService.Backend.Installer"
 $packageName = "EdFi.DmsConfigurationService"
 $testResults = "$PSScriptRoot/TestResults"
 #Coverage
@@ -140,6 +141,13 @@ function PublishApi {
     }
 }
 
+function PublishBackendInstaller {
+    Invoke-Execute {
+        $installerProject = "$backendRoot/$installerProjectName/"
+        $outputPath = "$installerProject/publish"
+        dotnet publish $installerProject -c $Configuration -o $outputPath --nologo
+    }
+}
 
 function RunTests {
     param (
@@ -253,6 +261,7 @@ function Invoke-Publish {
     Write-Output "Building Version ($DmsConfigurationServiceVersion)"
 
     Invoke-Step { PublishApi }
+    Invoke-Step { PublishBackendInstaller }
 }
 
 function Invoke-Clean {
