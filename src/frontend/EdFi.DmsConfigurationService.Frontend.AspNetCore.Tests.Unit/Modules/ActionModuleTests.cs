@@ -4,10 +4,8 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Net;
-using EdFi.DmsConfigurationService.Backend;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
-using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -16,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 using System.Text.Json;
 using NUnit.Framework;
-using System.Net.Http.Headers;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Tests.Unit.Modules;
 
