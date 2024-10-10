@@ -4,8 +4,10 @@
 // See the LICENSE and NOTICES files in the project root for more information.
 
 using System.Net;
+using EdFi.DmsConfigurationService.Backend;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Infrastructure;
 using EdFi.DmsConfigurationService.Frontend.AspNetCore.Model;
+using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Security.Claims;
 using System.Text.Json;
 using NUnit.Framework;
+using System.Net.Http.Headers;
 
 namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.Tests.Unit.Modules;
 
@@ -25,10 +28,20 @@ public class RegisterActionEndpointTests
     {
         private AdminAction[] _mockActionResponse;
         private HttpResponseMessage? _response;
-        private AdminAction[]? _content;
 
         [SetUp]
-        public async Task Setup()
+        public void Setup()
+        {
+            _mockActionResponse = [
+                new AdminAction {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/api/actions/create"},
+                new AdminAction {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/api/actions/read"},
+                new AdminAction {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/api/actions/update"},
+                new AdminAction {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/api/actions/delete"}
+            ];
+        }
+
+        [Test]
+        public async Task Given_valid_token_and_role()
         {
             // Arrange
             await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
@@ -42,45 +55,65 @@ public class RegisterActionEndpointTests
 
                         collection.AddAuthorization(options => options.AddPolicy(SecurityConstants.ServicePolicy,
                         policy => policy.RequireClaim(ClaimTypes.Role, AuthenticationConstants.Role)));
-
                     }
                 );
             });
             using var client = factory.CreateClient();
 
-            _mockActionResponse = [
-                new AdminAction {Id = 1, Name = "Create", Uri = "uri://ed-fi.org/api/actions/create"},
-                new AdminAction {Id = 2, Name = "Read", Uri = "uri://ed-fi.org/api/actions/read"},
-                new AdminAction {Id = 3, Name = "Update", Uri = "uri://ed-fi.org/api/actions/update"},
-                new AdminAction {Id = 4, Name = "Delete", Uri = "uri://ed-fi.org/api/actions/delete"}
-            ];
-
             // Act
             _response = await client.GetAsync("/actions");
             var responseString = await _response.Content.ReadAsStringAsync();
-            _content = JsonSerializer.Deserialize<AdminAction[]>(responseString);
+            var content = JsonSerializer.Deserialize<AdminAction[]>(responseString);
+
+            // Assert
+            _response!.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Should().BeEquivalentTo(_mockActionResponse);
         }
 
         [Test]
-        public void Given_valid_client_credentials_and_role()
+        public async Task Given_empty_auth_credentials()
         {
+            // Arrange
+            await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("Test");
+            });
+
+            using var client = factory.CreateClient();
+
+            // Act
+            _response = await client.GetAsync("/actions");
+
             // Assert
-            _response!.StatusCode.Should().Be(HttpStatusCode.OK);
+            _response!.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        // [Test]
-        // public void Given_empty_client_credentials()
-        // {
-        //     // Assert
-        //     _content.Should().BeEquivalentTo(_mockActionResponse);
-        // }
+        [Test]
+        public async Task Given_invalid_client_secret()
+        {
+            // Arrange
+            await using var factory = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+            {
+                builder.UseEnvironment("Test");
+                builder.ConfigureServices(
+                    (collection) =>
+                    {
+                        collection.AddAuthentication(AuthenticationConstants.AuthenticationSchema)
+                        .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(AuthenticationConstants.AuthenticationSchema, options => { });
 
-        // [Test]
-        // public void Given_invalid_client_secret()
-        // {
-        //     // Assert
-        //     _content.Should().BeEquivalentTo(_mockActionResponse);
-        // }
+                        collection.AddAuthorization(options => options.AddPolicy(SecurityConstants.ServicePolicy,
+                        policy => policy.RequireClaim(ClaimTypes.Role, "invalid-role")));
+                    }
+                );
+            });
+            using var client = factory.CreateClient();
+
+            // Act
+            _response = await client.GetAsync("/actions");
+
+            // Assert
+            _response!.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
 
         [TearDown]
         public void TearDown()
