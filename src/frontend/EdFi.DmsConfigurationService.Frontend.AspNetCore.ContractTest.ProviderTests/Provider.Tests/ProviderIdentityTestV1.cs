@@ -54,6 +54,9 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                              }).Build();
 
             this.server.Start();
+            //This was used to make some time and verify the swagger during the test execution
+            //for some reason it was not working when debugging
+            //Thread.Sleep(180000);
             this.verifier = new PactVerifier(new PactVerifierConfig()
             {
                 LogLevel = PactNet.PactLogLevel.Debug

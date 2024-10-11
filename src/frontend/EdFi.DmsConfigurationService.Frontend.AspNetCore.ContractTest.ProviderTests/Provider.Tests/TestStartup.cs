@@ -25,6 +25,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
 {
     public class TestStartup
     {
+        private ITokenManager? _tokenManager;
         //private IClientRepository? _clientRepository;
         public IConfiguration? Configuration { get; }
 
@@ -41,7 +42,25 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var assembly = typeof(IdentityModule).Assembly;
+            _tokenManager = A.Fake<ITokenManager>();
+            var token =
+                """
+            {
+                "access_token":"input123token",
+                "expires_in":900,
+                "token_type":"bearer"
+            }
+            """;
+            A.CallTo(() => _tokenManager.GetAccessTokenAsync(A<IEnumerable<KeyValuePair<string, string>>>.Ignored))
+                .Returns(Task.FromResult(token));
+
+            // Register the fake _tokenManager as a singleton so it's used wherever ITokenManager is required
+            services.AddSingleton(_tokenManager);
+
+            // Add other services needed by your application
+            services.AddControllers();
+
+/*             var assembly = typeof(IdentityModule).Assembly;
 
             services.AddRouting(options => options.LowercaseUrls = true);
 
@@ -53,10 +72,10 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                 })
                 .PartManager.ApplicationParts.Add(new AssemblyPart(assembly));
-
+*/
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Provider", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "DMS Configuration Service API", Version = "v1" });
             });
 
             services.TryAddSingleton<ITokenManager, FakeTokenManager>();
@@ -70,7 +89,7 @@ namespace EdFi.DmsConfigurationService.Frontend.AspNetCore.ContractTest.Provider
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Provider v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DMS Configuration Service API v1"));
             }
 
             app.UseRouting();
